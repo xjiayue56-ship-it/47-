@@ -23,7 +23,7 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 </style></head>
 <body>
 <div class="shell">
- <div class="top"><div><div class="title">47 小助手</div><div class="date">管理台 · 知识库已接入真实数据</div></div><div class="live" id="liveState">未连接</div></div>
+ <div class="top"><div><div class="title">47 小助手</div><div class="date">管理台 · 真实数据模式</div></div><div class="live" id="liveState">未连接</div></div>
 
  <div id="home" class="view active">
   <div class="grid">
@@ -38,7 +38,7 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
    <div class="kb-list" id="kbList"></div>
  </div>
 
- <div id="review" class="view"><div class="section-title">需要确认</div><div class="queue"><div class="case"><div class="avatar">M</div><div><h3>Momo · 模型列表为空</h3><p>重新导入和复制 URL 后仍为空，需要确认站点兼容情况。</p></div><span class="tag red">待你确认</span></div></div></div>
+ <div id="review" class="view"><div class="section-title">需要确认</div><div class="queue"><div class="empty">暂无待确认事项。以后无法确定答案、知识库缺失或需要人工处理的问题，会显示在这里。</div></div></div>
 </div>
 
 <div class="dock-wrap"><nav class="dock">
@@ -76,21 +76,17 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 </div></div>
 
 <script>
-const demoCases=[
-{name:"小雨",status:"AI 正在处理",topic:"API 是什么？新手引导中",preview:"正在解释 API，并准备引导寻找 API 站。"},
-{name:"Momo",status:"需要你确认",topic:"模型列表为空",preview:"重新导入和复制 URL 后仍为空。"},
-{name:"77",status:"人工处理中",topic:"语音无法播放",preview:"已人工接管，等待用户发送设置截图。"}];
-const demoLogs=[
-["12:18","API 新手问题已解决","已完成基础解释并同步「新手识别 → 低术语引导」规则。","重复 4 次"],
-["11:46","新增问题：模型列表为空","已有排查步骤无法解决，已自动加入「待确认」。",""],
-["10:30","语音设置问题已解决","用户配置错误；解决步骤已记录到知识库草稿。","重复 2 次"],
-["09:12","知识库已更新","「如何寻找 API 站」新增不主动提供推广/返利链接规范。",""]
-];
+const demoCases=[];
+const demoLogs=[];
 let sb=null, articles=[], currentAssets=[], pendingFiles=[];
 
 function renderHome(){
- queue.innerHTML=demoCases.map(x=>`<div class="case"><div class="avatar">${x.name.slice(0,1)}</div><div><h3>${x.name} · ${x.topic}</h3><p>${x.preview}</p></div><span class="tag ${x.status.includes('确认')?'red':''}">${x.status}</span></div>`).join("");
- logs.innerHTML=demoLogs.map(x=>`<div class="log"><div class="time">${x[0]}</div><b>${x[1]}</b>${x[3]?`<span class=count>${x[3]}</span>`:""}<p>${x[2]}</p></div>`).join("");
+ queue.innerHTML = demoCases.length
+   ? demoCases.map(x=>`<div class="case"><div class="avatar">${x.name.slice(0,1)}</div><div><h3>${x.name} · ${x.topic}</h3><p>${x.preview}</p></div><span class="tag ${x.status.includes('确认')?'red':''}">${x.status}</span></div>`).join("")
+   : `<div class="empty">暂无正在处理的会话。接入真实消息渠道后，新消息会显示在这里。</div>`;
+ logs.innerHTML = demoLogs.length
+   ? demoLogs.map(x=>`<div class="log"><div class="time">${x[0]}</div><b>${x[1]}</b>${x[3]?`<span class=count>${x[3]}</span>`:""}<p>${x[2]}</p></div>`).join("")
+   : `<div class="empty">暂无日志。开始处理真实消息后，这里会记录处理结果。</div>`;
 }
 function showView(id,b){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".dock button").forEach(x=>x.classList.remove("active"));b.classList.add("active");if(id==="knowledge")loadArticles()}
 function setState(t,ok=false,err=false){liveState.textContent=t;kbStatus.textContent=t;kbStatus.className="statusbar "+(ok?"ok":err?"err":"")}
