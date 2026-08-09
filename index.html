@@ -61,6 +61,16 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
   .msg-row>div{max-width:82%}
 }
 
+
+/* v0.4 — AI / knowledge / human review */
+.review-case{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:17px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.review-case h3{font-size:15px;margin:0 0 6px}.review-case p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}
+.review-reason{font-size:11px;color:var(--red);margin-top:6px}
+.review-source{padding:10px 0;border-bottom:1px solid var(--line)}
+.review-source b{font-size:12px}.review-source p{font-size:11px;color:var(--muted);line-height:1.45;margin:4px 0 0}
+.review-actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
+.ai-badge{font-size:9px;color:var(--muted);margin-left:6px}
+
 </style></head>
 <body>
 <div class="shell">
@@ -79,7 +89,10 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
    <div class="kb-list" id="kbList"></div>
  </div>
 
- <div id="review" class="view"><div class="section-title">需要确认</div><div class="queue"><div class="empty">暂无待确认事项。以后无法确定答案、知识库缺失或需要人工处理的问题，会显示在这里。</div></div></div>
+ <div id="review" class="view">
+  <div class="toolbar"><div><div class="section-title" style="margin:0">需要确认</div><div class="statusbar" id="reviewStatus">等待同步</div></div></div>
+  <div class="queue" id="reviewQueue"></div>
+ </div>
 </div>
 
 <div class="dock-wrap"><nav class="dock">
@@ -100,6 +113,22 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
   <button class="chat-send" id="replySend" onclick="sendReply()">发送</button>
  </div>
  <div class="chat-send-note" id="replyNote">发送后会进入待发送队列，由 Mac 上运行的 QQ Bridge 发到对方 QQ。</div>
+</div></div>
+
+<div class="overlay" id="reviewOverlay"><div class="sheet">
+ <div class="sheet-head"><div><b id="reviewTitle">待确认</b><div class="chat-sub" id="reviewSub"></div></div><button class="close" onclick="closeReview()">×</button></div>
+ <div class="sheet-body">
+  <input type="hidden" id="reviewId">
+  <div class="field"><label>用户问题</label><div id="reviewQuestion" style="white-space:pre-wrap;line-height:1.6"></div></div>
+  <div class="field"><label>为什么需要人工确认</label><div id="reviewReason" class="note"></div></div>
+  <div class="field"><label>AI 草稿（可以直接修改）</label><textarea id="reviewDraft" placeholder="如果 AI 没有可靠草稿，可以在这里自己写回复。"></textarea></div>
+  <div class="field"><label>参考知识库</label><div id="reviewSources"></div></div>
+  <div class="review-actions">
+    <button class="btn" onclick="resolveWithoutSend()">仅标记已处理</button>
+    <button class="btn black" onclick="approveReview()">确认并发送</button>
+  </div>
+  <div class="statusbar" id="reviewActionStatus"></div>
+ </div>
 </div></div>
 
 <div class="overlay" id="editorOverlay"><div class="sheet">
@@ -133,7 +162,7 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 <script>
 const demoCases=[];
 const demoLogs=[];
-let sb=null, articles=[], conversations=[], currentConversation=null, currentAssets=[], pendingFiles=[], supportPoll=null;
+let sb=null, articles=[], conversations=[], reviews=[], logsData=[], currentConversation=null, currentReview=null, currentAssets=[], pendingFiles=[], supportPoll=null;
 
 function renderHome(){
  if(!sb){
@@ -151,15 +180,30 @@ function renderHome(){
       return `<div class="case" onclick="openChat('${x.id}')"><div class="avatar">${name.slice(0,1)}</div><div><h3>${name}${unread?`<span class="unread">${unread}</span>`:""}</h3><p>${preview}</p></div><span class="tag ${tag}">${status}</span></div>`
     }).join("")
    : `<div class="empty">暂无正在处理的会话。现在有人给测试 QQ 发私聊后，会自动出现在这里。</div>`;
- logs.innerHTML=`<div class="empty">暂无日志。AI 处理结果、重复问题和新增问题会在后续阶段显示在这里。</div>`;
+ logs.innerHTML = logsData.length ? logsData.map(x=>{
+   const tm=new Date(x.created_at).toLocaleString("zh-CN",{hour:"2-digit",minute:"2-digit"});
+   const names={auto_reply:"AI 自动回复",needs_review:"转人工确认",human_reply:"人工确认发送",ai_error:"AI 处理异常"};
+   return `<div class="log"><div class="time">${tm}</div><b>${esc(names[x.event_type]||x.event_type||"处理记录")}</b><p>${esc(x.summary||"")}</p></div>`
+ }).join("") : `<div class="empty">暂无日志。</div>`;
 }
-function showView(id,b){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".dock button").forEach(x=>x.classList.remove("active"));b.classList.add("active");if(id==="knowledge")loadArticles();if(id==="home")loadSupport()}
+function showView(id,b){
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".dock button").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");
+ if(id==="knowledge")loadArticles();
+ if(id==="home")loadSupport();
+ if(id==="review")loadReviews();
+}
 
 async function loadSupport(){
  if(!sb){conversations=[];renderHome();return}
  const {data,error}=await sb.from("support_conversations").select("*").neq("status","closed").order("last_message_at",{ascending:false});
  if(error){console.error(error);conversations=[];renderHome();return}
- conversations=data||[];renderHome();
+ conversations=data||[];
+ const {data:lg,error:le}=await sb.from("support_logs").select("*").order("created_at",{ascending:false}).limit(30);
+ logsData=le?[]:(lg||[]);
+ renderHome();
 }
 async function openChat(id){
  if(!sb)return;
@@ -217,7 +261,65 @@ function replyKeydown(e){
 function closeChat(){chatOverlay.classList.remove("show");currentConversation=null}
 function startSupportPolling(){
  if(supportPoll)clearInterval(supportPoll);
- supportPoll=setInterval(()=>{if(sb)loadSupport()},4000);
+ supportPoll=setInterval(()=>{if(sb){loadSupport();loadReviews()}},4000);
+}
+
+
+async function loadReviews(){
+ if(!sb){reviews=[];renderReviews();return}
+ reviewStatus.textContent="正在同步…";
+ const {data,error}=await sb.from("support_reviews")
+   .select("*,support_conversations(display_name,external_user_id)")
+   .eq("status","pending").order("created_at",{ascending:false});
+ if(error){reviewStatus.textContent="读取失败："+error.message;reviewStatus.className="statusbar err";reviews=[];renderReviews();return}
+ reviews=data||[];reviewStatus.textContent=reviews.length?`${reviews.length} 条待确认`:"暂无待确认";reviewStatus.className="statusbar ok";renderReviews();
+}
+function renderReviews(){
+ reviewQueue.innerHTML=reviews.length?reviews.map(r=>{
+   const c=r.support_conversations||{};
+   const who=esc(c.display_name||c.external_user_id||"QQ用户");
+   return `<div class="review-case" onclick="openReview('${r.id}')"><div><h3>${who}</h3><p>${esc(r.question||"")}</p><div class="review-reason">${esc(r.reason||"需要人工确认")}</div></div><span class="tag red">待确认</span></div>`
+ }).join(""):`<div class="empty">暂无待确认事项。AI 能确定的会直接回复，无法可靠回答的问题会出现在这里。</div>`;
+}
+async function openReview(id){
+ currentReview=reviews.find(x=>x.id===id)||null;if(!currentReview)return;
+ const c=currentReview.support_conversations||{};
+ reviewId.value=currentReview.id;
+ reviewTitle.textContent=c.display_name||"待确认";
+ reviewSub.textContent=`QQ ${c.external_user_id||""}`;
+ reviewQuestion.textContent=currentReview.question||"";
+ reviewReason.textContent=currentReview.reason||"知识库不足或 AI 无法可靠判断";
+ reviewDraft.value=currentReview.draft_answer||"";
+ const src=Array.isArray(currentReview.sources)?currentReview.sources:[];
+ reviewSources.innerHTML=src.length?src.map(s=>`<div class="review-source"><b>${esc(s.title||"知识库")}</b><p>${esc(s.excerpt||"")}</p></div>`).join(""):`<div class="empty" style="padding:14px 0">没有可靠的知识库来源。</div>`;
+ reviewActionStatus.textContent="";
+ reviewOverlay.classList.add("show");
+}
+function closeReview(){reviewOverlay.classList.remove("show");currentReview=null}
+async function approveReview(){
+ if(!sb||!currentReview)return;
+ const answer=reviewDraft.value.trim();if(!answer){reviewActionStatus.textContent="请先填写要发送的回复";return}
+ reviewActionStatus.textContent="正在加入发送队列…";
+ const now=new Date().toISOString();
+ const {error}=await sb.from("support_messages").insert({
+   conversation_id:currentReview.conversation_id,channel:"qq",direction:"outbound",
+   sender_id:"47-helper-human",sender_name:"47小助手",message_type:"text",content:answer,
+   raw_payload:{source:"human_review",review_id:currentReview.id},delivery_status:"pending",created_at:now
+ });
+ if(error){reviewActionStatus.textContent="发送失败："+error.message;reviewActionStatus.className="statusbar err";return}
+ await sb.from("support_reviews").update({status:"resolved",final_answer:answer,resolved_at:now}).eq("id",currentReview.id);
+ await sb.from("support_conversations").update({status:"processing",last_message:answer,last_message_at:now,updated_at:now}).eq("id",currentReview.conversation_id);
+ await sb.from("support_logs").insert({conversation_id:currentReview.conversation_id,event_type:"human_reply",summary:"人工确认后已加入 QQ 发送队列",details:{review_id:currentReview.id}});
+ reviewActionStatus.textContent="已确认，等待 QQ Bridge 发送";reviewActionStatus.className="statusbar ok";
+ await Promise.all([loadReviews(),loadSupport()]);
+ setTimeout(closeReview,500);
+}
+async function resolveWithoutSend(){
+ if(!sb||!currentReview)return;
+ const now=new Date().toISOString();
+ await sb.from("support_reviews").update({status:"dismissed",resolved_at:now}).eq("id",currentReview.id);
+ await sb.from("support_conversations").update({status:"processing",updated_at:now}).eq("id",currentReview.conversation_id);
+ await loadReviews();closeReview();
 }
 
 function setState(t,ok=false,err=false){liveState.textContent=t;kbStatus.textContent=t;kbStatus.className="statusbar "+(ok?"ok":err?"err":"")}
@@ -228,7 +330,7 @@ async function initSupabase(){
   sb=supabase.createClient(c.url,c.key);
   const {error}=await sb.from("kb_articles").select("id",{count:"exact",head:true}); if(error)throw error;
   setState("数据已同步",true);
-  await Promise.all([loadArticles(),loadSupport()]);
+  await Promise.all([loadArticles(),loadSupport(),loadReviews()]);
   startSupportPolling();
  }catch(e){
   console.error(e);setState("连接失败",false,true);renderArticles();renderHome()
