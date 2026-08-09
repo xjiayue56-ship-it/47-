@@ -199,6 +199,7 @@ async function sendReply(){
    message_type:"text",
    content:text,
    raw_payload:{source:"admin_web",delivery_status:"pending"},
+   delivery_status:"pending",
    created_at:now
  });
  if(error){note.textContent="发送失败："+error.message;btn.disabled=false;return}
