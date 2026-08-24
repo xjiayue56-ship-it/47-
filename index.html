@@ -71,6 +71,12 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 .review-actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
 .ai-badge{font-size:9px;color:var(--muted);margin-left:6px}
 
+/* Entitlement V1 — Owner-only authorization inside the existing helper */
+.ent-auth{padding:54px 0;border-top:1px solid var(--line);max-width:620px}.ent-auth h2,.ent-panel h2{margin:3px 0 8px;font-size:20px;letter-spacing:-.35px}.ent-auth p,.ent-panel p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 16px}.ent-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.ent-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}.ent-summary div{border-top:1px solid var(--line);padding:14px 2px}.ent-summary strong{display:block;font-size:24px;margin-bottom:4px}.ent-summary span{font-size:11px;color:var(--muted)}
+.ent-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:28px;margin-bottom:26px}.ent-panel{border-top:1px solid var(--line);padding-top:16px}.ent-form{display:grid;grid-template-columns:minmax(160px,1fr) minmax(150px,.7fr) auto;gap:9px;align-items:end}.ent-form label,.ent-admin-form label{font-size:11px;color:var(--muted)}.ent-form input,.ent-form select,.ent-admin-form input,.ent-search input,.ent-search select{display:block;width:100%;border:0;background:var(--soft);border-radius:13px;padding:11px 12px;outline:none;color:var(--ink);margin-top:6px}.ent-form input:focus,.ent-form select:focus,.ent-admin-form input:focus,.ent-search input:focus,.ent-search select:focus{box-shadow:0 0 0 1px #999 inset}.ent-form button,.ent-admin-form button,.ent-search button{white-space:nowrap}
+.ent-search{display:grid;grid-template-columns:minmax(150px,1fr) minmax(120px,.55fr) auto;gap:8px;align-items:end}.ent-list{border-top:1px solid var(--line);margin-top:14px}.ent-row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(105px,.55fr) minmax(90px,.5fr) minmax(180px,1.2fr);gap:13px;align-items:center;padding:15px 2px;border-bottom:1px solid var(--line)}.ent-qq{font-weight:650;font-size:14px}.ent-meta{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}.ent-status{font-size:11px;padding:5px 8px;border-radius:999px;background:var(--soft);display:inline-block}.ent-status.revoked{color:var(--red)}.ent-type{width:100%;border:0;background:var(--soft);border-radius:10px;padding:8px 9px}.ent-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.ent-actions button{border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:7px 4px;cursor:pointer;font-size:11px}.ent-actions button.danger{color:var(--red)}.ent-actions button:disabled,.ent-type:disabled{opacity:.4;cursor:not-allowed}.ent-admin-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ent-admin-list{border-top:1px solid var(--line);margin-top:14px}.ent-admin-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:12px}.ent-feedback{min-height:18px;font-size:11px;color:#2d6a4f;margin-top:12px}.ent-feedback.err{color:var(--red)}
+@media(max-width:800px){.ent-grid{grid-template-columns:1fr}.ent-summary{grid-template-columns:repeat(3,1fr)}.ent-form,.ent-search{grid-template-columns:1fr}.ent-row{grid-template-columns:1fr 1fr}.ent-actions{grid-column:1/-1;justify-content:flex-start}.ent-topline{align-items:flex-start}.ent-summary strong{font-size:20px}}
+
 </style></head>
 <body>
 <div class="shell">
@@ -93,12 +99,51 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
   <div class="toolbar"><div><div class="section-title" style="margin:0">需要确认</div><div class="statusbar" id="reviewStatus">等待同步</div></div></div>
   <div class="queue" id="reviewQueue"></div>
  </div>
+
+ <div id="authorization" class="view">
+  <div class="ent-topline"><div><div class="section-title" style="margin:0">授权</div><div class="statusbar" id="entitlementStatus">等待 Owner 验证</div></div><button class="btn" id="entitlementLogout" onclick="logoutEntitlementConsole()" style="display:none">退出授权</button></div>
+  <div id="entitlementAuth" class="ent-auth">
+   <h2>47 Entitlement</h2>
+   <p>Owner 身份和所有授权权限均由 47 服务端验证。验证完成后可在这里发放资格、管理 Activation Link 与 Admin Allowlist。</p>
+   <button class="btn black" onclick="startEntitlementOwnerAuth()">验证 Owner 身份</button>
+  </div>
+  <div id="entitlementWorkspace" style="display:none">
+   <div class="ent-summary">
+    <div><strong id="entitlementTotal">0</strong><span>授权记录</span></div>
+    <div><strong id="entitlementUnused">0</strong><span>待激活</span></div>
+    <div><strong id="entitlementAdminCount">0</strong><span>Admin QQ</span></div>
+   </div>
+   <div class="ent-grid">
+    <section class="ent-panel">
+     <div class="section-title">发放授权</div><h2>Activation Link</h2><p>重复 QQ 会返回现有资格，不会创建第二条 Entitlement。</p>
+     <form class="ent-form" onsubmit="issueEntitlement(event)">
+      <label>目标 QQ<input id="entitlementIssueQq" inputmode="numeric" autocomplete="off" required></label>
+      <label>用户类型<select id="entitlementIssueType"><option value="stable">stable · 正式</option><option value="beta">beta · 测试</option><option value="developer">developer · 开发</option></select></label>
+      <button class="btn black" id="entitlementIssueButton" type="submit">生成并复制</button>
+     </form>
+    </section>
+    <section class="ent-panel">
+     <div class="section-title">Admin Allowlist</div><h2>QQ 快捷发放</h2><p>Admin 仅能通过 QQ 机器人确认发放 stable，不能进入本后台或修改类型。</p>
+     <form class="ent-admin-form" onsubmit="addEntitlementAdmin(event)"><label>Admin QQ<input id="entitlementAdminQq" inputmode="numeric" autocomplete="off" required></label><button class="btn black" type="submit">添加</button></form>
+     <div class="ent-admin-list" id="entitlementAdminList"></div>
+    </section>
+   </div>
+   <section class="ent-panel">
+    <div class="toolbar"><div><div class="section-title" style="margin:0">授权记录</div><div class="statusbar">待激活 / 已激活 / 已撤销</div></div>
+     <form class="ent-search" onsubmit="searchEntitlements(event)"><label>QQ<input id="entitlementSearchQq" inputmode="numeric" placeholder="搜索 QQ"></label><label>状态<select id="entitlementFilter" onchange="renderEntitlements()"><option value="all">全部</option><option value="pending">待激活</option><option value="activated">已激活</option><option value="revoked">已撤销</option></select></label><button class="btn" type="submit">查询</button></form>
+    </div>
+    <div class="ent-list" id="entitlementList"></div>
+   </section>
+   <div class="ent-feedback" id="entitlementFeedback" aria-live="polite"></div>
+  </div>
+ </div>
 </div>
 
 <div class="dock-wrap"><nav class="dock">
  <button class="active" onclick="showView('home',this)">处理中</button>
  <button onclick="showView('knowledge',this)">知识库</button>
  <button onclick="showView('review',this)">待确认</button>
+ <button onclick="showView('authorization',this)">授权</button>
 </nav></div>
 
 
@@ -163,6 +208,10 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 const demoCases=[];
 const demoLogs=[];
 let sb=null, articles=[], conversations=[], reviews=[], logsData=[], currentConversation=null, currentReview=null, currentAssets=[], pendingFiles=[], supportPoll=null;
+const ENTITLEMENT_API_ORIGIN="https://mono-phone-chat-xiaoxiong.jx4728.chatgpt.site";
+const ENTITLEMENT_AUTH_URL=ENTITLEMENT_API_ORIGIN+"/api/entitlements/helper-console/auth/start";
+const ENTITLEMENT_SESSION_KEY="47_helper_entitlement_owner_session_v1";
+let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false;
 
 function renderHome(){
  if(!sb){
@@ -194,6 +243,7 @@ function showView(id,b){
  if(id==="knowledge")loadArticles();
  if(id==="home")loadSupport();
  if(id==="review")loadReviews();
+ if(id==="authorization")loadEntitlementConsole();
 }
 
 async function loadSupport(){
@@ -400,6 +450,136 @@ async function deleteArticle(){
  const {error}=await sb.from("kb_articles").delete().eq("id",id);if(error){editorStatus.textContent="删除失败："+error.message;return}
  await loadArticles();closeEditor()
 }
-renderHome();renderArticles();initSupabase();
+
+function setEntitlementFeedback(message,error=false){
+ entitlementFeedback.textContent=message||"";
+ entitlementFeedback.className="ent-feedback"+(error?" err":"");
+}
+function renderEntitlementAccess(authenticated){
+ entitlementAuth.style.display=authenticated?"none":"block";
+ entitlementWorkspace.style.display=authenticated?"block":"none";
+ entitlementLogout.style.display=authenticated?"inline-block":"none";
+ entitlementStatus.textContent=authenticated?"Owner 已验证":"等待 Owner 验证";
+ entitlementStatus.className="statusbar"+(authenticated?" ok":"");
+}
+async function entitlementRequest(path,init={}){
+ const headers={...(init.body?{"Content-Type":"application/json"}:{}),...(init.headers||{})};
+ if(entitlementSessionToken)headers.Authorization="Bearer "+entitlementSessionToken;
+ const response=await fetch(ENTITLEMENT_API_ORIGIN+path,{...init,headers,mode:"cors",cache:"no-store"});
+ const result=await response.json().catch(()=>null);
+ if(!response.ok||!result?.ok){
+  if(response.status===401||response.status===403){entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);renderEntitlementAccess(false)}
+  throw new Error(result?.message||"授权操作没有完成，请重试");
+ }
+ return result;
+}
+function startEntitlementOwnerAuth(){location.href=ENTITLEMENT_AUTH_URL}
+async function exchangeEntitlementCode(code){
+ entitlementStatus.textContent="正在确认 Owner 身份…";
+ try{
+  const result=await entitlementRequest("/api/entitlements/helper-console/session",{method:"POST",body:JSON.stringify({code})});
+  entitlementSessionToken=result.sessionToken||"";
+  if(!entitlementSessionToken)throw new Error("Owner 会话没有建立，请重新验证");
+  sessionStorage.setItem(ENTITLEMENT_SESSION_KEY,entitlementSessionToken);
+  renderEntitlementAccess(true);
+  await refreshEntitlements();
+ }catch(error){renderEntitlementAccess(false);setEntitlementFeedback(error.message||"Owner 身份验证失败",true)}
+}
+async function logoutEntitlementConsole(){
+ try{if(entitlementSessionToken)await entitlementRequest("/api/entitlements/helper-console/session",{method:"DELETE"})}catch(error){console.error(error)}
+ entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();setEntitlementFeedback("")
+}
+async function loadEntitlementConsole(){
+ if(!entitlementSessionToken){renderEntitlementAccess(false);return}
+ renderEntitlementAccess(true);
+ if(!entitlementRows.length&&!entitlementBusy)await refreshEntitlements();
+}
+async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=false){
+ if(!entitlementSessionToken||(entitlementBusy&&!force))return;
+ const ownsBusyState=!entitlementBusy;
+ if(ownsBusyState)entitlementBusy=true;
+ entitlementStatus.textContent="正在同步授权…";setEntitlementFeedback("");
+ try{
+  const [records,operators]=await Promise.all([
+   entitlementRequest("/api/owner-console/entitlements?q="+encodeURIComponent(query)),
+   entitlementRequest("/api/owner-console/operators")
+  ]);
+  entitlementRows=records.entitlements||[];entitlementOperators=operators.operators||[];
+  renderEntitlementAccess(true);renderEntitlements();renderEntitlementAdmins();
+ }catch(error){setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(ownsBusyState)entitlementBusy=false}
+}
+function entitlementState(row){return row.status==="revoked"?"revoked":row.activationState==="activated"?"activated":"pending"}
+function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"已撤销":state==="activated"?"已激活":"待激活"}
+function entitlementTime(value){return value?new Date(value).toLocaleString("zh-CN",{hour12:false}):"—"}
+function renderEntitlements(){
+ const filter=entitlementFilter.value||"all";
+ const rows=entitlementRows.filter(row=>filter==="all"||entitlementState(row)===filter);
+ entitlementTotal.textContent=String(entitlementRows.length);
+ entitlementUnused.textContent=String(entitlementRows.filter(row=>entitlementState(row)==="pending").length);
+ entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
+ entitlementList.innerHTML=rows.length?rows.map(row=>{
+  const state=entitlementState(row),disabled=row.status==="revoked"?" disabled":"";
+  return `<div class="ent-row" data-id="${esc(row.entitlementId)}"><div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"?'<button data-ent-action="regenerate">重新生成</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
+ }).join(""):`<div class="empty">没有匹配的授权记录。</div>`;
+}
+function renderEntitlementAdmins(){
+ entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
+ entitlementAdminList.innerHTML=entitlementOperators.length?entitlementOperators.map(row=>`<div class="ent-admin-row" data-qq="${esc(row.qq_account)}"><span>${esc(row.qq_account)}</span><span>${row.status==="active"?"已授权":"已撤销"}</span><button class="btn" data-admin-action="toggle">${row.status==="active"?"撤销":"恢复"}</button></div>`).join(""):`<div class="empty" style="padding:20px 0">还没有 Admin QQ。</div>`;
+}
+async function copyEntitlementLink(row){
+ if(!row?.activationLink)throw new Error("这条授权没有可复制的未使用链接");
+ try{await navigator.clipboard.writeText(row.activationLink)}catch{
+  const input=document.createElement("textarea");input.value=row.activationLink;input.setAttribute("readonly","");input.style.position="fixed";input.style.opacity="0";document.body.appendChild(input);input.select();if(!document.execCommand("copy")){input.remove();throw new Error("浏览器没有允许复制")};input.remove()
+ }
+}
+async function issueEntitlement(event){
+ event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;entitlementIssueButton.disabled=true;setEntitlementFeedback("");
+ try{
+  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"POST",body:JSON.stringify({qqAccount:entitlementIssueQq.value,userType:entitlementIssueType.value})});
+  if(result.entitlement?.activationLink)await copyEntitlementLink(result.entitlement);
+  entitlementIssueQq.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(result.entitlement?.activationLink?"授权已就绪，Activation Link 已复制":"该 QQ 已经激活，没有创建重复资格");
+ }catch(error){setEntitlementFeedback(error.message||"发放失败",true)}finally{entitlementBusy=false;entitlementIssueButton.disabled=false}
+}
+async function mutateEntitlement(row,action,userType){
+ if(entitlementBusy)return;if(action==="revoke"&&!confirm(`确定撤销 QQ ${row.qqAccount} 的 47 使用资格吗？`))return;
+ entitlementBusy=true;setEntitlementFeedback("");
+ try{
+  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action,entitlementId:row.entitlementId,userType})});
+  if(result.entitlement?.activationLink)await copyEntitlementLink(result.entitlement);
+  await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(action==="regenerate"?"新链接已生成并复制，旧链接已失效":action==="revoke"?"资格已撤销":"用户类型已更新");
+ }catch(error){setEntitlementFeedback(error.message||"操作失败",true)}finally{entitlementBusy=false}
+}
+function searchEntitlements(event){event.preventDefault();refreshEntitlements(entitlementSearchQq.value.trim())}
+async function addEntitlementAdmin(event){
+ event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;setEntitlementFeedback("");
+ try{await entitlementRequest("/api/owner-console/operators",{method:"POST",body:JSON.stringify({qqAccount:entitlementAdminQq.value})});entitlementAdminQq.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback("Admin QQ 已加入 Allowlist")}
+ catch(error){setEntitlementFeedback(error.message||"Admin 添加失败",true)}finally{entitlementBusy=false}
+}
+entitlementList.addEventListener("click",event=>{
+ const button=event.target.closest("[data-ent-action]");if(!button||button.tagName==="SELECT")return;
+ const row=entitlementRows.find(item=>item.entitlementId===button.closest(".ent-row")?.dataset.id);if(!row)return;
+ const action=button.dataset.entAction;
+ if(action==="copy")copyEntitlementLink(row).then(()=>setEntitlementFeedback("Activation Link 已复制")).catch(error=>setEntitlementFeedback(error.message,true));
+ else mutateEntitlement(row,action);
+});
+entitlementList.addEventListener("change",event=>{
+ const select=event.target.closest('select[data-ent-action="change-type"]');if(!select)return;
+ const row=entitlementRows.find(item=>item.entitlementId===select.closest(".ent-row")?.dataset.id);if(row)mutateEntitlement(row,"change-type",select.value)
+});
+entitlementAdminList.addEventListener("click",event=>{
+ const button=event.target.closest('[data-admin-action="toggle"]');if(!button)return;
+ const qq=button.closest(".ent-admin-row")?.dataset.qq,row=entitlementOperators.find(item=>item.qq_account===qq);if(!row||entitlementBusy)return;
+ entitlementBusy=true;entitlementRequest("/api/owner-console/operators",{method:"PATCH",body:JSON.stringify({qqAccount:qq,active:row.status!=="active"})}).then(()=>refreshEntitlements(entitlementSearchQq.value.trim(),true)).then(()=>setEntitlementFeedback(row.status==="active"?"Admin 已撤销":"Admin 已恢复")).catch(error=>setEntitlementFeedback(error.message,true)).finally(()=>{entitlementBusy=false})
+});
+async function initEntitlementUi(){
+ const raw=location.hash.slice(1),splitAt=raw.indexOf("?"),view=splitAt>=0?raw.slice(0,splitAt):raw,params=new URLSearchParams(splitAt>=0?raw.slice(splitAt+1):"");
+ if(view==="authorization"){
+  const button=[...document.querySelectorAll(".dock button")].find(item=>item.textContent.trim()==="授权");if(button)showView("authorization",button);
+ }
+ const code=params.get("entitlement_code");
+ if(code){history.replaceState(null,"",location.pathname+location.search+"#authorization");await exchangeEntitlementCode(code)}
+ else renderEntitlementAccess(Boolean(entitlementSessionToken));
+}
+renderHome();renderArticles();initSupabase();initEntitlementUi();
 </script>
 </body></html>
