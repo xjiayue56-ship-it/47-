@@ -75,6 +75,7 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 .ent-auth{padding:54px 0;border-top:1px solid var(--line);max-width:620px}.ent-auth h2,.ent-panel h2{margin:3px 0 8px;font-size:20px;letter-spacing:-.35px}.ent-auth p,.ent-panel p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 16px}.ent-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.ent-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}.ent-summary div{border-top:1px solid var(--line);padding:14px 2px}.ent-summary strong{display:block;font-size:24px;margin-bottom:4px}.ent-summary span{font-size:11px;color:var(--muted)}
 .ent-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:28px;margin-bottom:26px}.ent-panel{border-top:1px solid var(--line);padding-top:16px}.ent-form{display:grid;grid-template-columns:minmax(160px,1fr) minmax(150px,.7fr) auto;gap:9px;align-items:end}.ent-form label,.ent-admin-form label{font-size:11px;color:var(--muted)}.ent-form input,.ent-form select,.ent-admin-form input,.ent-search input,.ent-search select{display:block;width:100%;border:0;background:var(--soft);border-radius:13px;padding:11px 12px;outline:none;color:var(--ink);margin-top:6px}.ent-form input:focus,.ent-form select:focus,.ent-admin-form input:focus,.ent-search input:focus,.ent-search select:focus{box-shadow:0 0 0 1px #999 inset}.ent-form button,.ent-admin-form button,.ent-search button{white-space:nowrap}
 .ent-search{display:grid;grid-template-columns:minmax(150px,1fr) minmax(120px,.55fr) auto;gap:8px;align-items:end}.ent-list{border-top:1px solid var(--line);margin-top:14px}.ent-row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(105px,.55fr) minmax(90px,.5fr) minmax(180px,1.2fr);gap:13px;align-items:center;padding:15px 2px;border-bottom:1px solid var(--line)}.ent-qq{font-weight:650;font-size:14px}.ent-meta{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}.ent-status{font-size:11px;padding:5px 8px;border-radius:999px;background:var(--soft);display:inline-block}.ent-status.revoked{color:var(--red)}.ent-type{width:100%;border:0;background:var(--soft);border-radius:10px;padding:8px 9px}.ent-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.ent-actions button{border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:7px 4px;cursor:pointer;font-size:11px}.ent-actions button.danger{color:var(--red)}.ent-actions button:disabled,.ent-type:disabled{opacity:.4;cursor:not-allowed}.ent-admin-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ent-admin-list{border-top:1px solid var(--line);margin-top:14px}.ent-admin-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:12px}.ent-feedback{min-height:18px;font-size:11px;color:#2d6a4f;margin-top:12px}.ent-feedback.err{color:var(--red)}
+.ent-device-panel{margin-top:26px}.ent-device-panel[hidden]{display:none}.ent-device-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.ent-device-head h2{margin:3px 0 6px}.ent-device-list{border-top:1px solid var(--line);margin-top:13px}.ent-device-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line)}.ent-device-row h3{margin:0 0 5px;font-size:13px;font-weight:650}.ent-device-row p{margin:0;color:var(--muted);font-size:10px;line-height:1.6}.ent-device-row button{border:0;background:transparent;color:var(--red);font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ent-device-row.is-revoked{opacity:.5}.ent-device-current{margin-left:7px;color:#2d6a4f;font-size:9px;font-weight:500}.ent-device-status{font-size:11px;color:var(--muted);margin-top:10px}
 @media(max-width:800px){.ent-grid{grid-template-columns:1fr}.ent-summary{grid-template-columns:repeat(3,1fr)}.ent-form,.ent-search{grid-template-columns:1fr}.ent-row{grid-template-columns:1fr 1fr}.ent-actions{grid-column:1/-1;justify-content:flex-start}.ent-topline{align-items:flex-start}.ent-summary strong{font-size:20px}}
 
 </style></head>
@@ -133,6 +134,11 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
      <form class="ent-search" onsubmit="searchEntitlements(event)"><label>QQ<input id="entitlementSearchQq" inputmode="numeric" placeholder="搜索 QQ"></label><label>状态<select id="entitlementFilter" onchange="renderEntitlements()"><option value="all">全部</option><option value="pending">待激活</option><option value="activated">已激活</option><option value="revoked">已撤销</option></select></label><button class="btn" type="submit">查询</button></form>
     </div>
     <div class="ent-list" id="entitlementList"></div>
+   </section>
+   <section class="ent-panel ent-device-panel" id="entitlementDevicePanel" hidden>
+    <div class="ent-device-head"><div><div class="section-title" style="margin:0">授权设备</div><h2 id="entitlementDeviceTitle">Account 设备</h2><p id="entitlementDeviceSubtitle"></p></div><button class="btn" type="button" onclick="closeEntitlementDevices()">关闭</button></div>
+    <div class="ent-device-list" id="entitlementDeviceList"></div>
+    <div class="ent-device-status" id="entitlementDeviceStatus"></div>
    </section>
    <div class="ent-feedback" id="entitlementFeedback" aria-live="polite"></div>
   </div>
@@ -212,7 +218,7 @@ const ENTITLEMENT_API_ORIGIN="https://mono-phone-chat-xiaoxiong.jx4728.chatgpt.s
 const ENTITLEMENT_AUTH_URL=ENTITLEMENT_API_ORIGIN+"/api/entitlements/helper-console/auth/start";
 const ENTITLEMENT_SESSION_KEY="47_helper_entitlement_owner_session_v1";
 const ENTITLEMENT_POLL_INTERVAL_MS=15000;
-let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false, entitlementPoll=null, activeHelperView="home";
+let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false, entitlementPoll=null, activeHelperView="home", entitlementDeviceContext=null;
 
 function renderHome(){
  if(!sb){
@@ -502,7 +508,7 @@ async function exchangeEntitlementCode(code){
 }
 async function logoutEntitlementConsole(){
  try{if(entitlementSessionToken)await entitlementRequest("/api/entitlements/helper-console/session",{method:"DELETE"})}catch(error){console.error(error)}
- stopEntitlementPolling();entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();setEntitlementFeedback("")
+ stopEntitlementPolling();entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];entitlementDeviceContext=null;renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();closeEntitlementDevices();setEntitlementFeedback("")
 }
 async function loadEntitlementConsole(){
  stopEntitlementPolling();
@@ -536,8 +542,27 @@ function renderEntitlements(){
  entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
  entitlementList.innerHTML=rows.length?rows.map(row=>{
   const state=entitlementState(row),disabled=row.status==="revoked"?" disabled":"";
-  return `<div class="ent-row" data-id="${esc(row.entitlementId)}"><div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"?'<button data-ent-action="regenerate">重新生成</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
+  return `<div class="ent-row" data-id="${esc(row.entitlementId)}"><div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"?'<button data-ent-action="regenerate">重新生成</button>':""}${state==="activated"?'<button data-ent-action="devices">设备</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
  }).join(""):`<div class="empty">没有匹配的授权记录。</div>`;
+}
+function entitlementDeviceLimitLabel(result){return result.userType==="developer"?"Developer · 不限设备":`${result.userType==="beta"?"Beta":"Stable"} · ${result.limit} 台设备上限`}
+function entitlementDeviceTypeLabel(type){return type==="iphone"?"iPhone":type==="ipad"?"iPad":type==="android"?"Android":type==="desktop"?"Desktop":"Browser"}
+function renderEntitlementDevices(result){
+ entitlementDevicePanel.hidden=false;entitlementDeviceTitle.textContent=`QQ ${result.qqAccount}`;entitlementDeviceSubtitle.textContent=entitlementDeviceLimitLabel(result);
+ const devices=result.devices||[];entitlementDeviceList.innerHTML=devices.length?devices.map(device=>`<div class="ent-device-row${device.revokedAt?" is-revoked":""}" data-device-id="${esc(device.deviceId)}"><div><h3>${esc(device.name)} · ${entitlementDeviceTypeLabel(device.type)}${device.current?'<span class="ent-device-current">当前设备</span>':""}</h3><p>授权 ${entitlementTime(device.authorizedAt)}<br>最近使用 ${entitlementTime(device.lastUsedAt)}${device.revokedAt?`<br>已撤销 ${entitlementTime(device.revokedAt)}`:""}</p></div>${device.revokedAt?'<span class="ent-status revoked">已撤销</span>':'<button type="button" data-device-action="revoke">撤销设备</button>'}</div>`).join(""):'<div class="empty">当前没有授权设备。</div>';
+ entitlementDeviceStatus.textContent=`当前有效 ${devices.filter(device=>!device.revokedAt).length} 台`;
+}
+async function openEntitlementDevices(row){
+ entitlementDevicePanel.hidden=false;entitlementDeviceTitle.textContent=`QQ ${row.qqAccount}`;entitlementDeviceSubtitle.textContent="正在读取设备…";entitlementDeviceList.innerHTML="";entitlementDeviceStatus.textContent="";
+ try{const result=await entitlementRequest("/api/owner-console/devices?qq="+encodeURIComponent(row.qqAccount));entitlementDeviceContext=result;renderEntitlementDevices(result);entitlementDevicePanel.scrollIntoView({behavior:"smooth",block:"start"})}
+ catch(error){entitlementDeviceContext=null;entitlementDeviceSubtitle.textContent="";entitlementDeviceStatus.textContent=error.message||"设备读取失败"}
+}
+function closeEntitlementDevices(){entitlementDeviceContext=null;entitlementDevicePanel.hidden=true;entitlementDeviceList.innerHTML="";entitlementDeviceStatus.textContent=""}
+async function revokeEntitlementDevice(deviceId){
+ if(!entitlementDeviceContext||!confirm("确定撤销这台设备的 47 登录资格吗？"))return;
+ entitlementDeviceStatus.textContent="正在撤销设备…";
+ try{await entitlementRequest("/api/owner-console/devices",{method:"DELETE",body:JSON.stringify({accountId:entitlementDeviceContext.accountId,deviceId})});await openEntitlementDevices({qqAccount:entitlementDeviceContext.qqAccount});setEntitlementFeedback("设备已撤销")}
+ catch(error){entitlementDeviceStatus.textContent=error.message||"设备撤销失败"}
 }
 function renderEntitlementAdmins(){
  entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
@@ -577,6 +602,7 @@ entitlementList.addEventListener("click",event=>{
  const row=entitlementRows.find(item=>item.entitlementId===button.closest(".ent-row")?.dataset.id);if(!row)return;
  const action=button.dataset.entAction;
  if(action==="copy")copyEntitlementLink(row).then(()=>setEntitlementFeedback("Activation Link 已复制")).catch(error=>setEntitlementFeedback(error.message,true));
+ else if(action==="devices")openEntitlementDevices(row);
  else mutateEntitlement(row,action);
 });
 entitlementList.addEventListener("change",event=>{
@@ -588,6 +614,7 @@ entitlementAdminList.addEventListener("click",event=>{
  const qq=button.closest(".ent-admin-row")?.dataset.qq,row=entitlementOperators.find(item=>item.qq_account===qq);if(!row||entitlementBusy)return;
  entitlementBusy=true;entitlementRequest("/api/owner-console/operators",{method:"PATCH",body:JSON.stringify({qqAccount:qq,active:row.status!=="active"})}).then(()=>refreshEntitlements(entitlementSearchQq.value.trim(),true)).then(()=>setEntitlementFeedback(row.status==="active"?"Admin 已撤销":"Admin 已恢复")).catch(error=>setEntitlementFeedback(error.message,true)).finally(()=>{entitlementBusy=false})
 });
+entitlementDeviceList.addEventListener("click",event=>{const button=event.target.closest('[data-device-action="revoke"]');if(button)revokeEntitlementDevice(button.closest(".ent-device-row")?.dataset.deviceId||"")});
 async function initEntitlementUi(){
  const raw=location.hash.slice(1),splitAt=raw.indexOf("?"),view=splitAt>=0?raw.slice(0,splitAt):raw,params=new URLSearchParams(splitAt>=0?raw.slice(splitAt+1):"");
  if(view==="authorization"){

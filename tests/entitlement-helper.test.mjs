@@ -21,8 +21,17 @@ test("authorization UI delegates identity and privilege decisions to the 47 serv
   assert.match(html, /\/api\/entitlements\/helper-console\/session/);
   assert.match(html, /\/api\/owner-console\/entitlements/);
   assert.match(html, /\/api\/owner-console\/operators/);
+  assert.match(html, /\/api\/owner-console\/devices/);
   assert.match(html, /headers\.Authorization="Bearer "\+entitlementSessionToken/);
   assert.doesNotMatch(html, /ENTITLEMENT_QQ_BRIDGE_SECRET|service_role/);
+});
+
+test("Owner can inspect and revoke Account devices without exposing that capability to Admin", () => {
+  assert.match(html, /data-ent-action="devices"/);
+  assert.match(html, /id="entitlementDevicePanel"/);
+  assert.match(html, /openEntitlementDevices/);
+  assert.match(html, /revokeEntitlementDevice/);
+  assert.match(html, /method:"DELETE",body:JSON\.stringify\(\{accountId:entitlementDeviceContext\.accountId,deviceId\}\)/);
 });
 
 test("authorization status refreshes while visible and stops outside the authorization view", () => {
