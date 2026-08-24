@@ -25,6 +25,14 @@ test("authorization UI delegates identity and privilege decisions to the 47 serv
   assert.doesNotMatch(html, /ENTITLEMENT_QQ_BRIDGE_SECRET|service_role/);
 });
 
+test("authorization status refreshes while visible and stops outside the authorization view", () => {
+  assert.match(html, /ENTITLEMENT_POLL_INTERVAL_MS=15000/);
+  assert.match(html, /if\(id==="authorization"\)loadEntitlementConsole\(\);[\s\S]*else stopEntitlementPolling\(\)/);
+  assert.match(html, /await refreshEntitlements\(entitlementSearchQq\.value\.trim\(\),false,true\);[\s\S]*startEntitlementPolling\(\)/);
+  assert.match(html, /document\.addEventListener\("visibilitychange"/);
+  assert.match(html, /if\(document\.hidden\)\{stopEntitlementPolling\(\);return\}/);
+});
+
 test("the inline Helper application script parses", () => {
   const match = html.match(/<script>([\s\S]*)<\/script>/);
   assert.ok(match, "inline Helper script is present");

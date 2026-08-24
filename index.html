@@ -211,7 +211,8 @@ let sb=null, articles=[], conversations=[], reviews=[], logsData=[], currentConv
 const ENTITLEMENT_API_ORIGIN="https://mono-phone-chat-xiaoxiong.jx4728.chatgpt.site";
 const ENTITLEMENT_AUTH_URL=ENTITLEMENT_API_ORIGIN+"/api/entitlements/helper-console/auth/start";
 const ENTITLEMENT_SESSION_KEY="47_helper_entitlement_owner_session_v1";
-let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false;
+const ENTITLEMENT_POLL_INTERVAL_MS=15000;
+let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false, entitlementPoll=null, activeHelperView="home";
 
 function renderHome(){
  if(!sb){
@@ -236,6 +237,7 @@ function renderHome(){
  }).join("") : `<div class="empty">暂无日志。</div>`;
 }
 function showView(id,b){
+ activeHelperView=id;
  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
  document.getElementById(id).classList.add("active");
  document.querySelectorAll(".dock button").forEach(x=>x.classList.remove("active"));
@@ -244,6 +246,7 @@ function showView(id,b){
  if(id==="home")loadSupport();
  if(id==="review")loadReviews();
  if(id==="authorization")loadEntitlementConsole();
+ else stopEntitlementPolling();
 }
 
 async function loadSupport(){
@@ -461,6 +464,17 @@ function renderEntitlementAccess(authenticated){
  entitlementLogout.style.display=authenticated?"inline-block":"none";
  entitlementStatus.textContent=authenticated?"Owner 已验证":"等待 Owner 验证";
  entitlementStatus.className="statusbar"+(authenticated?" ok":"");
+ if(!authenticated)stopEntitlementPolling();
+}
+function stopEntitlementPolling(){
+ if(entitlementPoll!==null){clearInterval(entitlementPoll);entitlementPoll=null}
+}
+function startEntitlementPolling(){
+ stopEntitlementPolling();
+ if(!entitlementSessionToken||activeHelperView!=="authorization"||document.hidden)return;
+ entitlementPoll=setInterval(()=>{
+  if(activeHelperView==="authorization"&&!document.hidden)refreshEntitlements(entitlementSearchQq.value.trim(),false,true);
+ },ENTITLEMENT_POLL_INTERVAL_MS);
 }
 async function entitlementRequest(path,init={}){
  const headers={...(init.body?{"Content-Type":"application/json"}:{}),...(init.headers||{})};
@@ -483,22 +497,25 @@ async function exchangeEntitlementCode(code){
   sessionStorage.setItem(ENTITLEMENT_SESSION_KEY,entitlementSessionToken);
   renderEntitlementAccess(true);
   await refreshEntitlements();
+  startEntitlementPolling();
  }catch(error){renderEntitlementAccess(false);setEntitlementFeedback(error.message||"Owner 身份验证失败",true)}
 }
 async function logoutEntitlementConsole(){
  try{if(entitlementSessionToken)await entitlementRequest("/api/entitlements/helper-console/session",{method:"DELETE"})}catch(error){console.error(error)}
- entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();setEntitlementFeedback("")
+ stopEntitlementPolling();entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();setEntitlementFeedback("")
 }
 async function loadEntitlementConsole(){
+ stopEntitlementPolling();
  if(!entitlementSessionToken){renderEntitlementAccess(false);return}
  renderEntitlementAccess(true);
- if(!entitlementRows.length&&!entitlementBusy)await refreshEntitlements();
+ await refreshEntitlements(entitlementSearchQq.value.trim(),false,true);
+ startEntitlementPolling();
 }
-async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=false){
+async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=false,silent=false){
  if(!entitlementSessionToken||(entitlementBusy&&!force))return;
  const ownsBusyState=!entitlementBusy;
  if(ownsBusyState)entitlementBusy=true;
- entitlementStatus.textContent="正在同步授权…";setEntitlementFeedback("");
+ if(!silent){entitlementStatus.textContent="正在同步授权…";setEntitlementFeedback("")}
  try{
   const [records,operators]=await Promise.all([
    entitlementRequest("/api/owner-console/entitlements?q="+encodeURIComponent(query)),
@@ -506,7 +523,7 @@ async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=
   ]);
   entitlementRows=records.entitlements||[];entitlementOperators=operators.operators||[];
   renderEntitlementAccess(true);renderEntitlements();renderEntitlementAdmins();
- }catch(error){setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(ownsBusyState)entitlementBusy=false}
+ }catch(error){if(!silent)setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(ownsBusyState)entitlementBusy=false}
 }
 function entitlementState(row){return row.status==="revoked"?"revoked":row.activationState==="activated"?"activated":"pending"}
 function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"已撤销":state==="activated"?"已激活":"待激活"}
@@ -580,6 +597,10 @@ async function initEntitlementUi(){
  if(code){history.replaceState(null,"",location.pathname+location.search+"#authorization");await exchangeEntitlementCode(code)}
  else renderEntitlementAccess(Boolean(entitlementSessionToken));
 }
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){stopEntitlementPolling();return}
+ if(activeHelperView==="authorization")loadEntitlementConsole();
+});
 renderHome();renderArticles();initSupabase();initEntitlementUi();
 </script>
 </body></html>
