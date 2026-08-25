@@ -32,6 +32,14 @@ test("Owner can inspect and revoke Account devices without exposing that capabil
   assert.match(html, /openEntitlementDevices/);
   assert.match(html, /revokeEntitlementDevice/);
   assert.match(html, /method:"DELETE",body:JSON\.stringify\(\{accountId:entitlementDeviceContext\.accountId,deviceId\}\)/);
+  assert.match(html, /result\.overLimit/);
+  assert.match(html, /超过当前上限/);
+});
+
+test("expired Activation Links stay visible as expired and can only be regenerated", () => {
+  assert.match(html, /row\.activationState==="expired"\?"expired"/);
+  assert.match(html, /state==="expired"\?"已过期"/);
+  assert.match(html, /state==="pending"\|\|state==="expired"\?'<button data-ent-action="regenerate">重新生成<\/button>'/);
 });
 
 test("authorization status refreshes while visible and stops outside the authorization view", () => {
