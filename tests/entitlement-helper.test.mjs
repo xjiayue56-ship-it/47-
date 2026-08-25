@@ -49,6 +49,16 @@ test("Owner can inspect and revoke Account devices without exposing that capabil
   assert.match(html, /超过当前上限/);
 });
 
+test("activated accounts expose an Owner-only copy action for the existing login entry", () => {
+  assert.match(html, /state==="activated"\?'<button data-ent-action="copy-login-link">复制登录入口<\/button><button data-ent-action="devices">设备<\/button>'/);
+  assert.match(html, /async function copyActivatedAccountLoginLink\(row\)/);
+  assert.match(html, /action:"copy-login-link",entitlementId:row\.entitlementId/);
+  assert.match(html, /if\(!result\.loginLink\)throw new Error\("已有账号登录入口没有正确返回"\)/);
+  assert.match(html, /await copyEntitlementText\(result\.loginLink\)/);
+  assert.match(html, /action==="copy-login-link"\)copyActivatedAccountLoginLink\(row\)/);
+  assert.doesNotMatch(html, /action:"regenerate-login-link"|action:"issue-login-link"/);
+});
+
 test("expired Activation Links stay visible as expired and can only be regenerated", () => {
   assert.match(html, /row\.activationState==="expired"\?"expired"/);
   assert.match(html, /state==="expired"\?"已过期"/);
@@ -153,7 +163,7 @@ test("batch user_type changes use the existing Owner PATCH path and refresh auto
 test("single-account type management and existing authorization operations remain available", () => {
   assert.match(html, /data-ent-action="change-type"/);
   assert.match(html, /mutateEntitlement\(row,"change-type",select\.value\)/);
-  for (const operation of ["复制链接", "重新生成", "设备", "撤销"]) {
+  for (const operation of ["复制链接", "复制登录入口", "重新生成", "设备", "撤销"]) {
     assert.match(html, new RegExp(operation));
   }
 });

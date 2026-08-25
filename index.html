@@ -557,7 +557,7 @@ function renderEntitlements(){
   const state=entitlementState(row),disabled=row.status==="revoked"?" disabled":"";
   const checked=entitlementSelectedIds.has(row.entitlementId)?" checked":"";
   const selector=entitlementBatchMode?`<label class="ent-select" aria-label="选择 QQ ${esc(row.qqAccount)}"><input type="checkbox" data-ent-select${checked}${disabled}></label>`:"";
-  return `<div class="ent-row${entitlementBatchMode?" is-batch":""}" data-id="${esc(row.entitlementId)}">${selector}<div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"||state==="expired"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"||state==="expired"?'<button data-ent-action="regenerate">重新生成</button>':""}${state==="activated"?'<button data-ent-action="devices">设备</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
+  return `<div class="ent-row${entitlementBatchMode?" is-batch":""}" data-id="${esc(row.entitlementId)}">${selector}<div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"||state==="expired"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"||state==="expired"?'<button data-ent-action="regenerate">重新生成</button>':""}${state==="activated"?'<button data-ent-action="copy-login-link">复制登录入口</button><button data-ent-action="devices">设备</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
  }).join(""):`<div class="empty">没有匹配的授权记录。</div>`;
  renderEntitlementBatchState();
 }
@@ -608,11 +608,23 @@ function renderEntitlementAdmins(){
  entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
  entitlementAdminList.innerHTML=entitlementOperators.length?entitlementOperators.map(row=>`<div class="ent-admin-row" data-qq="${esc(row.qq_account)}"><span>${esc(row.qq_account)}</span><span>${row.status==="active"?"已授权":"已撤销"}</span><button class="btn" data-admin-action="toggle">${row.status==="active"?"撤销":"恢复"}</button></div>`).join(""):`<div class="empty" style="padding:20px 0">还没有 Admin QQ。</div>`;
 }
+async function copyEntitlementText(value){
+ if(!value)throw new Error("没有可复制的链接");
+ try{await navigator.clipboard.writeText(value)}catch{
+  const input=document.createElement("textarea");input.value=value;input.setAttribute("readonly","");input.style.position="fixed";input.style.opacity="0";document.body.appendChild(input);input.select();if(!document.execCommand("copy")){input.remove();throw new Error("浏览器没有允许复制")};input.remove()
+ }
+}
 async function copyEntitlementLink(row){
  if(!row?.activationLink)throw new Error("这条授权没有可复制的未使用链接");
- try{await navigator.clipboard.writeText(row.activationLink)}catch{
-  const input=document.createElement("textarea");input.value=row.activationLink;input.setAttribute("readonly","");input.style.position="fixed";input.style.opacity="0";document.body.appendChild(input);input.select();if(!document.execCommand("copy")){input.remove();throw new Error("浏览器没有允许复制")};input.remove()
- }
+ await copyEntitlementText(row.activationLink)
+}
+async function copyActivatedAccountLoginLink(row){
+ if(entitlementBusy)return;entitlementBusy=true;setEntitlementFeedback("");
+ try{
+  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action:"copy-login-link",entitlementId:row.entitlementId})});
+  if(!result.loginLink)throw new Error("已有账号登录入口没有正确返回");
+  await copyEntitlementText(result.loginLink);setEntitlementFeedback("已有账号登录入口已复制")
+ }catch(error){setEntitlementFeedback(error.message||"登录入口复制失败",true)}finally{entitlementBusy=false}
 }
 async function issueEntitlement(event){
  event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;entitlementIssueButton.disabled=true;setEntitlementFeedback("");
@@ -642,6 +654,7 @@ entitlementList.addEventListener("click",event=>{
  const row=entitlementRows.find(item=>item.entitlementId===button.closest(".ent-row")?.dataset.id);if(!row)return;
  const action=button.dataset.entAction;
  if(action==="copy")copyEntitlementLink(row).then(()=>setEntitlementFeedback("Activation Link 已复制")).catch(error=>setEntitlementFeedback(error.message,true));
+ else if(action==="copy-login-link")copyActivatedAccountLoginLink(row);
  else if(action==="devices")openEntitlementDevices(row);
  else mutateEntitlement(row,action);
 });
