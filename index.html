@@ -73,10 +73,12 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
 
 /* Entitlement V1 — Owner-only authorization inside the existing helper */
 .ent-auth{padding:54px 0;border-top:1px solid var(--line);max-width:620px}.ent-auth h2,.ent-panel h2{margin:3px 0 8px;font-size:20px;letter-spacing:-.35px}.ent-auth p,.ent-panel p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 16px}.ent-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.ent-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}.ent-summary div{border-top:1px solid var(--line);padding:14px 2px}.ent-summary strong{display:block;font-size:24px;margin-bottom:4px}.ent-summary span{font-size:11px;color:var(--muted)}
-.ent-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:28px;margin-bottom:26px}.ent-panel{border-top:1px solid var(--line);padding-top:16px}.ent-form{display:grid;grid-template-columns:minmax(160px,1fr) minmax(150px,.7fr) auto;gap:9px;align-items:end}.ent-form label,.ent-admin-form label{font-size:11px;color:var(--muted)}.ent-form input,.ent-form select,.ent-admin-form input,.ent-search input,.ent-search select{display:block;width:100%;border:0;background:var(--soft);border-radius:13px;padding:11px 12px;outline:none;color:var(--ink);margin-top:6px}.ent-form input:focus,.ent-form select:focus,.ent-admin-form input:focus,.ent-search input:focus,.ent-search select:focus{box-shadow:0 0 0 1px #999 inset}.ent-form button,.ent-admin-form button,.ent-search button{white-space:nowrap}
-.ent-record-tools{display:flex;align-items:flex-end;gap:8px}.ent-search{display:grid;grid-template-columns:minmax(150px,1fr) minmax(112px,.55fr) minmax(112px,.55fr) auto;gap:8px;align-items:end}.ent-batch-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 2px;border-top:1px solid var(--line)}.ent-batch-bar[hidden]{display:none}.ent-batch-copy{font-size:11px;color:var(--muted);min-width:145px}.ent-batch-copy strong{color:var(--ink);font-size:13px}.ent-batch-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.ent-batch-actions button:not(.btn){border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:8px 3px;cursor:pointer;font-size:11px}.ent-batch-target{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px}.ent-batch-target select{border:0;background:var(--soft);border-radius:10px;padding:8px 9px;color:var(--ink)}.ent-list{border-top:1px solid var(--line);margin-top:14px}.ent-row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(105px,.55fr) minmax(90px,.5fr) minmax(180px,1.2fr);gap:13px;align-items:center;padding:15px 2px;border-bottom:1px solid var(--line)}.ent-row.is-batch{grid-template-columns:28px minmax(110px,.8fr) minmax(105px,.55fr) minmax(90px,.5fr) minmax(180px,1.2fr)}.ent-select{display:grid;place-items:center}.ent-select input{width:18px;height:18px;margin:0;accent-color:#111;cursor:pointer}.ent-select input:disabled{opacity:.3;cursor:not-allowed}.ent-qq{font-weight:650;font-size:14px}.ent-meta{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}.ent-status{font-size:11px;padding:5px 8px;border-radius:999px;background:var(--soft);display:inline-block}.ent-status.revoked{color:var(--red)}.ent-type{width:100%;border:0;background:var(--soft);border-radius:10px;padding:8px 9px}.ent-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.ent-actions button{border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:7px 4px;cursor:pointer;font-size:11px}.ent-actions button.danger{color:var(--red)}.ent-actions button:disabled,.ent-type:disabled{opacity:.4;cursor:not-allowed}.ent-admin-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ent-admin-list{border-top:1px solid var(--line);margin-top:14px}.ent-admin-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:12px}.ent-feedback{min-height:18px;font-size:11px;color:#2d6a4f;margin-top:12px}.ent-feedback.err{color:var(--red)}
+.ent-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:28px;margin-bottom:26px}.ent-panel{border-top:1px solid var(--line);padding-top:16px}.ent-form{display:grid;grid-template-columns:minmax(135px,1fr) repeat(3,minmax(118px,.65fr)) auto;gap:9px;align-items:end}.ent-form label,.ent-admin-form label,.ent-release-form label{font-size:11px;color:var(--muted)}.ent-form input,.ent-form select,.ent-admin-form input,.ent-search input,.ent-search select,.ent-release-form input{display:block;width:100%;border:0;background:var(--soft);border-radius:13px;padding:11px 12px;outline:none;color:var(--ink);margin-top:6px}.ent-form input:focus,.ent-form select:focus,.ent-admin-form input:focus,.ent-search input:focus,.ent-search select:focus,.ent-release-form input:focus{box-shadow:0 0 0 1px #999 inset}.ent-form button,.ent-admin-form button,.ent-search button,.ent-release-form button{white-space:nowrap}
+.ent-record-tools{display:flex;align-items:flex-end;gap:8px}.ent-search{display:grid;grid-template-columns:minmax(130px,1fr) repeat(3,minmax(105px,.55fr)) auto;gap:8px;align-items:end}.ent-batch-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 2px;border-top:1px solid var(--line)}.ent-batch-bar[hidden]{display:none}.ent-batch-copy{font-size:11px;color:var(--muted);min-width:145px}.ent-batch-copy strong{color:var(--ink);font-size:13px}.ent-batch-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.ent-batch-actions button:not(.btn){border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:8px 3px;cursor:pointer;font-size:11px}.ent-batch-target{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px}.ent-batch-target select{border:0;background:var(--soft);border-radius:10px;padding:8px 9px;color:var(--ink)}.ent-list{border-top:1px solid var(--line);margin-top:14px}.ent-row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(130px,.65fr) minmax(115px,.55fr) minmax(180px,1.2fr);gap:13px;align-items:center;padding:15px 2px;border-bottom:1px solid var(--line)}.ent-row.is-batch{grid-template-columns:28px minmax(110px,.8fr) minmax(130px,.65fr) minmax(115px,.55fr) minmax(180px,1.2fr)}.ent-select{display:grid;place-items:center}.ent-select input{width:18px;height:18px;margin:0;accent-color:#111;cursor:pointer}.ent-select input:disabled{opacity:.3;cursor:not-allowed}.ent-qq{font-weight:650;font-size:14px}.ent-meta{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}.ent-status{font-size:11px;padding:5px 8px;border-radius:999px;background:var(--soft);display:inline-block}.ent-status.revoked{color:var(--red)}.ent-dimensions{font-size:11px;line-height:1.55}.ent-dimensions b{font-size:12px}.ent-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.ent-actions button{border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;padding:7px 4px;cursor:pointer;font-size:11px}.ent-actions button.danger{color:var(--red)}.ent-actions button:disabled{opacity:.4;cursor:not-allowed}.ent-admin-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.ent-admin-list{border-top:1px solid var(--line);margin-top:14px}.ent-admin-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:12px}.ent-feedback{min-height:18px;font-size:11px;color:#2d6a4f;margin-top:12px}.ent-feedback.err{color:var(--red)}
+.ent-release-form{display:grid;grid-template-columns:repeat(4,minmax(115px,1fr)) auto;gap:9px;align-items:end;margin-top:14px}.ent-release-list{border-top:1px solid var(--line);margin-top:14px}.ent-release-row{display:grid;grid-template-columns:100px minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line)}.ent-release-row strong{font-size:13px}.ent-release-row p{margin:2px 0 0;font-size:10px}.ent-release-actions{display:flex;gap:7px}.ent-release-actions button{white-space:nowrap}
 .ent-device-panel{margin-top:26px}.ent-device-panel[hidden]{display:none}.ent-device-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.ent-device-head h2{margin:3px 0 6px}.ent-device-list{border-top:1px solid var(--line);margin-top:13px}.ent-device-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line)}.ent-device-row h3{margin:0 0 5px;font-size:13px;font-weight:650}.ent-device-row p{margin:0;color:var(--muted);font-size:10px;line-height:1.6}.ent-device-row button{border:0;background:transparent;color:var(--red);font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ent-device-row.is-revoked{opacity:.5}.ent-device-current{margin-left:7px;color:#2d6a4f;font-size:9px;font-weight:500}.ent-device-status{font-size:11px;color:var(--muted);margin-top:10px}
-@media(max-width:800px){.ent-grid{grid-template-columns:1fr}.ent-summary{grid-template-columns:repeat(3,1fr)}.ent-form,.ent-search{grid-template-columns:1fr}.ent-panel>.toolbar{align-items:flex-start;flex-direction:column}.ent-record-tools{width:100%;align-items:stretch;flex-direction:column}.ent-record-tools>.btn{align-self:flex-start}.ent-batch-bar{align-items:flex-start;flex-direction:column}.ent-batch-actions{justify-content:flex-start}.ent-row{grid-template-columns:1fr 1fr}.ent-row.is-batch{grid-template-columns:28px 1fr 1fr}.ent-row.is-batch .ent-actions{grid-column:2/-1}.ent-actions{grid-column:1/-1;justify-content:flex-start}.ent-topline{align-items:flex-start}.ent-summary strong{font-size:20px}}
+.ent-refund-form{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.ent-refund-form label{font-size:11px;color:var(--muted)}.ent-refund-form input{display:block;width:100%;border:0;background:var(--soft);border-radius:13px;padding:11px 12px;outline:none;color:var(--ink);margin-top:6px}.ent-refund-form input:focus{box-shadow:0 0 0 1px #999 inset}.ent-refund-form button{white-space:nowrap}
+@media(max-width:800px){.ent-grid{grid-template-columns:1fr}.ent-summary{grid-template-columns:repeat(3,1fr)}.ent-form,.ent-search,.ent-release-form{grid-template-columns:1fr}.ent-panel>.toolbar{align-items:flex-start;flex-direction:column}.ent-record-tools{width:100%;align-items:stretch;flex-direction:column}.ent-record-tools>.btn{align-self:flex-start}.ent-batch-bar{align-items:flex-start;flex-direction:column}.ent-batch-actions{justify-content:flex-start}.ent-row{grid-template-columns:1fr 1fr}.ent-row.is-batch{grid-template-columns:28px 1fr 1fr}.ent-row.is-batch .ent-actions{grid-column:2/-1}.ent-actions{grid-column:1/-1;justify-content:flex-start}.ent-release-row{grid-template-columns:1fr}.ent-topline{align-items:flex-start}.ent-summary strong{font-size:20px}}
 
 </style></head>
 <body>
@@ -119,9 +121,12 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
      <div class="section-title">发放授权</div><h2>Activation Link</h2><p>重复 QQ 会返回现有资格，不会创建第二条 Entitlement。</p>
      <form class="ent-form" onsubmit="issueEntitlement(event)">
       <label>目标 QQ<input id="entitlementIssueQq" inputmode="numeric" autocomplete="off" required></label>
-      <label>用户类型<select id="entitlementIssueType"><option value="stable">stable · 正式</option><option value="beta">beta · 测试</option><option value="developer">developer · 开发</option></select></label>
+      <label>身份<select id="entitlementIssueIdentity"><option value="customer">Customer</option><option value="tester">Tester</option></select></label>
+      <label>Release Channel<select id="entitlementIssueChannel"><option value="stable">Stable</option><option value="beta">Beta</option><option value="developer">Developer</option></select></label>
+      <label>Order ID<input id="entitlementIssueOrder" autocomplete="off" placeholder="可选"></label>
       <button class="btn black" id="entitlementIssueButton" type="submit">生成并复制</button>
      </form>
+     <form class="ent-refund-form" onsubmit="revokeRefundedEntitlement(event)"><label>退款 Order ID<input id="entitlementRefundOrder" autocomplete="off" placeholder="精确匹配订单" required></label><button class="btn red" type="submit">查找并 Revoke</button></form>
     </section>
     <section class="ent-panel">
      <div class="section-title">Admin Allowlist</div><h2>QQ 快捷发放</h2><p>Admin 仅能通过 QQ 机器人确认发放 stable，不能进入本后台或修改类型。</p>
@@ -130,11 +135,16 @@ button,input,textarea,select{font:inherit}.shell{min-height:100dvh;padding:24px 
     </section>
    </div>
    <section class="ent-panel">
-    <div class="toolbar"><div><div class="section-title" style="margin:0">授权记录</div><div class="statusbar">待激活 / 已过期 / 已激活 / 已撤销</div></div>
-     <div class="ent-record-tools"><form class="ent-search" onsubmit="searchEntitlements(event)"><label>QQ<input id="entitlementSearchQq" inputmode="numeric" placeholder="搜索 QQ"></label><label>状态<select id="entitlementFilter" onchange="changeEntitlementFilters()"><option value="all">全部</option><option value="pending">待激活</option><option value="activated">已激活</option><option value="revoked">已撤销</option></select></label><label>用户类型<select id="entitlementTypeFilter" onchange="changeEntitlementFilters()"><option value="all">全部</option><option value="stable">Stable</option><option value="beta">Beta</option><option value="developer">Developer</option></select></label><button class="btn" type="submit">查询</button></form><button class="btn" id="entitlementBatchToggle" type="button" onclick="toggleEntitlementBatchMode()">批量管理</button></div>
+    <div class="toolbar"><div><div class="section-title" style="margin:0">授权记录</div><div class="statusbar">Identity / Release Channel / Access Status 独立管理</div></div>
+     <div class="ent-record-tools"><form class="ent-search" onsubmit="searchEntitlements(event)"><label>QQ / Order ID<input id="entitlementSearchQq" placeholder="搜索 QQ 或 Order ID"></label><label>Access Status<select id="entitlementAccessFilter" onchange="changeEntitlementFilters()"><option value="all">全部</option><option value="pending">Pending</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="revoked">Revoked</option></select></label><label>身份<select id="entitlementIdentityFilter" onchange="changeEntitlementFilters()"><option value="all">全部</option><option value="owner">Owner</option><option value="admin">Admin</option><option value="customer">Customer</option><option value="tester">Tester</option></select></label><label>Channel<select id="entitlementChannelFilter" onchange="changeEntitlementFilters()"><option value="all">全部</option><option value="stable">Stable</option><option value="beta">Beta</option><option value="developer">Developer</option></select></label><button class="btn" type="submit">查询</button></form><button class="btn" id="entitlementBatchToggle" type="button" onclick="toggleEntitlementBatchMode()">批量管理</button></div>
     </div>
-    <div class="ent-batch-bar" id="entitlementBatchBar" hidden><div class="ent-batch-copy" id="entitlementBatchSummary"><strong>已选择 0 个账号</strong><br>全选仅作用于当前筛选结果</div><div class="ent-batch-actions"><button type="button" onclick="selectAllFilteredEntitlements()">全选当前结果</button><button type="button" onclick="clearEntitlementSelection()">取消选择</button><label class="ent-batch-target">修改为<select id="entitlementBatchType" onchange="renderEntitlementBatchState()"><option value="stable">Stable</option><option value="beta">Beta</option><option value="developer">Developer</option></select></label><button class="btn black" id="entitlementBatchApply" type="button" onclick="applyEntitlementBatchType()" disabled>确认修改</button></div></div>
+    <div class="ent-batch-bar" id="entitlementBatchBar" hidden><div class="ent-batch-copy" id="entitlementBatchSummary"><strong>已选择 0 个账号</strong><br>全选仅作用于当前筛选结果</div><div class="ent-batch-actions"><button type="button" onclick="selectAllFilteredEntitlements()">全选当前结果</button><button type="button" onclick="clearEntitlementSelection()">取消选择</button><label class="ent-batch-target">批量操作<select id="entitlementBatchAction" onchange="renderEntitlementBatchState()"><option value="suspend">Suspend</option><option value="resume">Resume</option><option value="channel:stable">Channel → Stable</option><option value="channel:beta">Channel → Beta</option><option value="channel:developer">Channel → Developer</option><option value="revoke">Revoke</option></select></label><button class="btn black" id="entitlementBatchApply" type="button" onclick="applyEntitlementBatchAction()" disabled>确认操作</button></div></div>
     <div class="ent-list" id="entitlementList"></div>
+   </section>
+   <section class="ent-panel" style="margin-top:26px">
+    <div class="section-title">Release Promotion</div><h2>Immutable Build</h2><p>Developer build 可以登记并部署；Beta / Stable 只允许 Owner 明确批准后晋升同一个 App / SHA / artifact，不会重新 build。</p>
+    <form class="ent-release-form" onsubmit="registerDeveloperRelease(event)"><label>App<input id="entitlementReleaseApp" inputmode="numeric" required></label><label>Git SHA<input id="entitlementReleaseSha" autocomplete="off" required></label><label>Sites<input id="entitlementReleaseSites" inputmode="numeric" required></label><label>Artifact Digest<input id="entitlementReleaseDigest" autocomplete="off" required></label><button class="btn black" type="submit">登记 Developer</button></form>
+    <div class="ent-release-list" id="entitlementReleaseList"></div>
    </section>
    <section class="ent-panel ent-device-panel" id="entitlementDevicePanel" hidden>
     <div class="ent-device-head"><div><div class="section-title" style="margin:0">授权设备</div><h2 id="entitlementDeviceTitle">Account 设备</h2><p id="entitlementDeviceSubtitle"></p></div><button class="btn" type="button" onclick="closeEntitlementDevices()">关闭</button></div>
@@ -219,7 +229,7 @@ const ENTITLEMENT_API_ORIGIN="https://mono-phone-chat-xiaoxiong.jx4728.chatgpt.s
 const ENTITLEMENT_AUTH_URL=ENTITLEMENT_API_ORIGIN+"/api/entitlements/helper-console/auth/start";
 const ENTITLEMENT_SESSION_KEY="47_helper_entitlement_owner_session_v1";
 const ENTITLEMENT_POLL_INTERVAL_MS=15000;
-let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementBusy=false, entitlementPoll=null, activeHelperView="home", entitlementDeviceContext=null, entitlementBatchMode=false, entitlementSelectedIds=new Set();
+let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementReleaseCatalog={channels:[],builds:[]}, entitlementBusy=false, entitlementPoll=null, activeHelperView="home", entitlementDeviceContext=null, entitlementBatchMode=false, entitlementSelectedIds=new Set();
 
 function renderHome(){
  if(!sb){
@@ -509,7 +519,7 @@ async function exchangeEntitlementCode(code){
 }
 async function logoutEntitlementConsole(){
  try{if(entitlementSessionToken)await entitlementRequest("/api/entitlements/helper-console/session",{method:"DELETE"})}catch(error){console.error(error)}
- stopEntitlementPolling();entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];entitlementDeviceContext=null;entitlementBatchMode=false;entitlementSelectedIds.clear();renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();closeEntitlementDevices();setEntitlementFeedback("")
+ stopEntitlementPolling();entitlementSessionToken="";sessionStorage.removeItem(ENTITLEMENT_SESSION_KEY);entitlementRows=[];entitlementOperators=[];entitlementReleaseCatalog={channels:[],builds:[]};entitlementDeviceContext=null;entitlementBatchMode=false;entitlementSelectedIds.clear();renderEntitlementAccess(false);renderEntitlements();renderEntitlementAdmins();renderEntitlementReleases();closeEntitlementDevices();setEntitlementFeedback("")
 }
 async function loadEntitlementConsole(){
  stopEntitlementPolling();
@@ -524,66 +534,77 @@ async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=
  if(ownsBusyState)entitlementBusy=true;
  if(!silent){entitlementStatus.textContent="正在同步授权…";setEntitlementFeedback("")}
  try{
-  const [records,operators]=await Promise.all([
-   entitlementRequest("/api/owner-console/entitlements?q="+encodeURIComponent(query)),
-   entitlementRequest("/api/owner-console/operators")
+  const params=new URLSearchParams({q:query});
+  if(entitlementIdentityFilter.value!=="all")params.set("identityType",entitlementIdentityFilter.value);
+  if(entitlementChannelFilter.value!=="all")params.set("releaseChannel",entitlementChannelFilter.value);
+  if(entitlementAccessFilter.value!=="all")params.set("accessStatus",entitlementAccessFilter.value);
+  const [records,operators,releases]=await Promise.all([
+   entitlementRequest("/api/owner-console/entitlements?"+params.toString()),
+   entitlementRequest("/api/owner-console/operators"),
+   entitlementRequest("/api/owner-console/releases")
   ]);
-  entitlementRows=records.entitlements||[];entitlementOperators=operators.operators||[];
-  renderEntitlementAccess(true);renderEntitlements();renderEntitlementAdmins();
+  entitlementRows=records.entitlements||[];entitlementOperators=operators.operators||[];entitlementReleaseCatalog={channels:releases.channels||[],builds:releases.builds||[]};
+  renderEntitlementAccess(true);renderEntitlements();renderEntitlementAdmins();renderEntitlementReleases();
  }catch(error){if(!silent)setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(ownsBusyState)entitlementBusy=false}
 }
-function entitlementState(row){return row.status==="revoked"?"revoked":row.activationState==="activated"?"activated":row.activationState==="expired"?"expired":"pending"}
-function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"已撤销":state==="activated"?"已激活":state==="expired"?"已过期":"待激活"}
-function entitlementMatchesQuery(row,query){const needle=String(query||"").trim().toLowerCase();return !needle||String(row.qqAccount||"").toLowerCase().includes(needle)}
-function entitlementMatchesFilter(row,filter){const state=entitlementState(row);return filter==="all"||state===filter||(filter==="pending"&&state==="expired")}
-function entitlementMatchesType(row,filter){return filter==="all"||String(row.userType||"").trim().toLowerCase()===filter}
-function filteredEntitlementRows(){const query=entitlementSearchQq.value,statusFilter=entitlementFilter.value||"all",typeFilter=entitlementTypeFilter.value||"all";return entitlementRows.filter(row=>entitlementMatchesQuery(row,query)&&entitlementMatchesFilter(row,statusFilter)&&entitlementMatchesType(row,typeFilter))}
+function entitlementState(row){return String(row.accessStatus||row.status||"pending").toLowerCase()}
+function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"Revoked":state==="suspended"?"Suspended":state==="active"?"Active":"Pending"}
+function entitlementMatchesQuery(row,query){const needle=String(query||"").trim().toLowerCase();return !needle||String(row.qqAccount||"").toLowerCase().includes(needle)||String(row.orderId||"").toLowerCase().includes(needle)}
+function entitlementMatchesDimension(row,value,key){return value==="all"||String(row[key]||"").trim().toLowerCase()===value}
+function filteredEntitlementRows(){const query=entitlementSearchQq.value,access=entitlementAccessFilter.value||"all",identity=entitlementIdentityFilter.value||"all",channel=entitlementChannelFilter.value||"all";return entitlementRows.filter(row=>entitlementMatchesQuery(row,query)&&entitlementMatchesDimension(row,access,"accessStatus")&&entitlementMatchesDimension(row,identity,"identityType")&&entitlementMatchesDimension(row,channel,"releaseChannel"))}
 function entitlementTime(value){return value?new Date(value).toLocaleString("zh-CN",{hour12:false}):"—"}
 function reconcileEntitlementSelection(rows=filteredEntitlementRows()){
- const selectableIds=new Set(rows.filter(row=>row.status==="active").map(row=>row.entitlementId));
+ const selectableIds=new Set(rows.filter(row=>entitlementState(row)!=="revoked").map(row=>row.entitlementId));
  entitlementSelectedIds=new Set([...entitlementSelectedIds].filter(id=>selectableIds.has(id)));
 }
 function renderEntitlementBatchState(){
  entitlementBatchBar.hidden=!entitlementBatchMode;entitlementBatchToggle.textContent=entitlementBatchMode?"结束批量管理":"批量管理";
- const count=entitlementSelectedIds.size,target=entitlementBatchType.value,targetLabel=target==="stable"?"Stable":target==="beta"?"Beta":"Developer";
- entitlementBatchSummary.innerHTML=`<strong>已选择 ${count} 个账号</strong><br>${count?`确认后将修改为 ${targetLabel}`:"全选仅作用于当前筛选结果"}`;
+ const count=entitlementSelectedIds.size,action=entitlementBatchAction.value,label=action==="suspend"?"Suspend":action==="resume"?"Resume":action==="revoke"?"永久 Revoke":`Channel → ${action.split(":")[1]}`;
+ entitlementBatchSummary.innerHTML=`<strong>已选择 ${count} 个账号</strong><br>${count?`确认后执行 ${esc(label)}`:"全选仅作用于当前筛选结果"}`;
  entitlementBatchApply.disabled=entitlementBusy||count===0;
 }
 function renderEntitlements(){
  const rows=filteredEntitlementRows();reconcileEntitlementSelection(rows);
  entitlementTotal.textContent=String(entitlementRows.length);
- entitlementUnused.textContent=String(entitlementRows.filter(row=>["pending","expired"].includes(entitlementState(row))).length);
+ entitlementUnused.textContent=String(entitlementRows.filter(row=>entitlementState(row)==="pending").length);
  entitlementAdminCount.textContent=String(entitlementOperators.filter(row=>row.status==="active").length);
  entitlementList.innerHTML=rows.length?rows.map(row=>{
-  const state=entitlementState(row),disabled=row.status==="revoked"?" disabled":"";
+  const state=entitlementState(row),revoked=state==="revoked";
   const checked=entitlementSelectedIds.has(row.entitlementId)?" checked":"";
-  const selector=entitlementBatchMode?`<label class="ent-select" aria-label="选择 QQ ${esc(row.qqAccount)}"><input type="checkbox" data-ent-select${checked}${disabled}></label>`:"";
-  return `<div class="ent-row${entitlementBatchMode?" is-batch":""}" data-id="${esc(row.entitlementId)}">${selector}<div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}</span></div><div><select class="ent-type" data-ent-action="change-type"${disabled}><option value="stable"${row.userType==="stable"?" selected":""}>stable</option><option value="beta"${row.userType==="beta"?" selected":""}>beta</option><option value="developer"${row.userType==="developer"?" selected":""}>developer</option></select></div><div><span class="ent-status ${state==="revoked"||state==="expired"?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${row.activationLink?'<button data-ent-action="copy">复制链接</button>':""}${state==="pending"||state==="expired"?'<button data-ent-action="regenerate">重新生成</button>':""}${state==="activated"?'<button data-ent-action="copy-login-link">复制登录入口</button><button data-ent-action="devices">设备</button>':""}${row.status==="active"?'<button class="danger" data-ent-action="revoke">撤销</button>':""}</div></div>`
+  const selector=entitlementBatchMode?`<label class="ent-select" aria-label="选择 QQ ${esc(row.qqAccount)}"><input type="checkbox" data-ent-select${checked}${revoked?" disabled":""}></label>`:"";
+  const betaMeta=row.releaseChannel==="beta"?`<br>Beta 到期 ${entitlementTime(row.betaAccessExpiresAt)}`:"";
+  const orderMeta=row.orderId?`<br>Order ${esc(row.orderId)}`:"",activationMeta=state==="pending"?`<br>Activation 到期 ${entitlementTime(row.activationExpiresAt)}`:"";
+  const lifecycle=state==="active"?'<button data-ent-action="suspend">Suspend</button>':state==="suspended"?'<button data-ent-action="resume">Resume</button>':"";
+  const activation=row.activationLink?'<button data-ent-action="copy">复制链接</button>':state==="pending"?'<button data-ent-action="regenerate">重新生成</button>':"";
+  const activated=state==="active"||state==="suspended"?'<button data-ent-action="copy-login-link">复制登录入口</button><button data-ent-action="devices">设备</button>':"";
+  const terminal=revoked?'<button data-ent-action="reissue">重新批准</button>':`<button class="danger" data-ent-action="revoke">Revoke</button>`;
+  return `<div class="ent-row${entitlementBatchMode?" is-batch":""}" data-id="${esc(row.entitlementId)}">${selector}<div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}${activationMeta}${betaMeta}${orderMeta}</span></div><div class="ent-dimensions"><b>${esc(row.identityType)}</b><br>${esc(row.releaseChannel)}</div><div><span class="ent-status ${revoked?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${activation}${activated}${lifecycle}${terminal}</div></div>`
  }).join(""):`<div class="empty">没有匹配的授权记录。</div>`;
  renderEntitlementBatchState();
 }
-function changeEntitlementFilters(){entitlementSelectedIds.clear();renderEntitlements()}
+function changeEntitlementFilters(){entitlementSelectedIds.clear();refreshEntitlements(entitlementSearchQq.value.trim())}
 function toggleEntitlementBatchMode(){entitlementBatchMode=!entitlementBatchMode;if(!entitlementBatchMode)entitlementSelectedIds.clear();renderEntitlements()}
-function selectAllFilteredEntitlements(){entitlementSelectedIds=new Set(filteredEntitlementRows().filter(row=>row.status==="active").map(row=>row.entitlementId));renderEntitlements()}
+function selectAllFilteredEntitlements(){entitlementSelectedIds=new Set(filteredEntitlementRows().filter(row=>entitlementState(row)!=="revoked").map(row=>row.entitlementId));renderEntitlements()}
 function clearEntitlementSelection(){entitlementSelectedIds.clear();renderEntitlements()}
-async function applyEntitlementBatchType(){
+async function applyEntitlementBatchAction(){
  if(entitlementBusy)return;
- const selectedRows=filteredEntitlementRows().filter(row=>row.status==="active"&&entitlementSelectedIds.has(row.entitlementId)),target=entitlementBatchType.value,targetLabel=target==="stable"?"Stable":target==="beta"?"Beta":"Developer";
- if(!selectedRows.length){setEntitlementFeedback("请先选择要修改的账号",true);return}
- if(!confirm(`已选择 ${selectedRows.length} 个账号，即将批量修改为 ${targetLabel}。确定继续吗？`))return;
- const pendingRows=selectedRows.filter(row=>row.userType!==target);
- if(!pendingRows.length){setEntitlementFeedback(`所选账号已经全部是 ${targetLabel}`);return}
+ const selectedRows=filteredEntitlementRows().filter(row=>entitlementState(row)!=="revoked"&&entitlementSelectedIds.has(row.entitlementId)),actionValue=entitlementBatchAction.value;
+ if(!selectedRows.length){setEntitlementFeedback("请先选择要操作的账号",true);return}
+ const accounts=selectedRows.map(row=>row.qqAccount).join("、"),label=actionValue==="suspend"?"Suspend":actionValue==="resume"?"Resume":actionValue==="revoke"?"永久 Revoke":`Channel → ${actionValue.split(":")[1]}`;
+ const confirmation=actionValue==="revoke"?`Revoke 是永久终态。\n\n本次将 Revoke 的全部账号：\n${accounts}\n\n确定继续吗？`:`本次将对以下账号执行 ${label}：\n${accounts}\n\n确定继续吗？`;
+ if(!confirm(confirmation))return;
+ const requestBody=row=>actionValue.startsWith("channel:")?{action:"change-dimensions",entitlementId:row.entitlementId,releaseChannel:actionValue.split(":")[1]}:{action:actionValue,entitlementId:row.entitlementId};
  entitlementBusy=true;renderEntitlementBatchState();setEntitlementFeedback("");
  const succeeded=new Set(),failed=[];
  try{
-  for(let index=0;index<pendingRows.length;index+=5){
-   const chunk=pendingRows.slice(index,index+5),results=await Promise.allSettled(chunk.map(row=>entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action:"change-type",entitlementId:row.entitlementId,userType:target})})));
+  for(let index=0;index<selectedRows.length;index+=5){
+   const chunk=selectedRows.slice(index,index+5),results=await Promise.allSettled(chunk.map(row=>entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify(requestBody(row))})));
    results.forEach((result,itemIndex)=>{const row=chunk[itemIndex];if(result.status==="fulfilled")succeeded.add(row.entitlementId);else failed.push({row,error:result.reason})});
   }
   entitlementSelectedIds=new Set(failed.map(item=>item.row.entitlementId));
   await refreshEntitlements(entitlementSearchQq.value.trim(),true,true);
   if(failed.length)setEntitlementFeedback(`已更新 ${succeeded.size} 个账号，${failed.length} 个未完成；失败账号已保留选择，请重试`,true);
-  else setEntitlementFeedback(`已将 ${succeeded.size} 个账号修改为 ${targetLabel}`);
+  else setEntitlementFeedback(`已对 ${succeeded.size} 个账号执行 ${label}`);
  }finally{entitlementBusy=false;renderEntitlements()}
 }
 function entitlementDeviceLimitLabel(result){return result.userType==="developer"?"Developer · 不限设备":`${result.userType==="beta"?"Beta":"Stable"} · ${result.limit} 台设备上限`}
@@ -630,21 +651,58 @@ async function copyActivatedAccountLoginLink(row){
 async function issueEntitlement(event){
  event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;entitlementIssueButton.disabled=true;setEntitlementFeedback("");
  try{
-  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"POST",body:JSON.stringify({qqAccount:entitlementIssueQq.value,userType:entitlementIssueType.value})});
+  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"POST",body:JSON.stringify({qqAccount:entitlementIssueQq.value,identityType:entitlementIssueIdentity.value,releaseChannel:entitlementIssueChannel.value,orderId:entitlementIssueOrder.value})});
   if(result.entitlement?.activationLink)await copyEntitlementLink(result.entitlement);
-  entitlementIssueQq.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(result.entitlement?.activationLink?"授权已就绪，Activation Link 已复制":"该 QQ 已经激活，没有创建重复资格");
+  entitlementIssueQq.value="";entitlementIssueOrder.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(result.entitlement?.activationLink?"授权已就绪，72 小时 Activation Link 已复制":"该 QQ 已经激活，没有创建重复资格");
  }catch(error){setEntitlementFeedback(error.message||"发放失败",true)}finally{entitlementBusy=false;entitlementIssueButton.disabled=false}
 }
-async function mutateEntitlement(row,action,userType){
- if(entitlementBusy)return;if(action==="revoke"&&!confirm(`确定撤销 QQ ${row.qqAccount} 的 47 使用资格吗？`))return;
+async function revokeRefundedEntitlement(event){
+ event.preventDefault();if(entitlementBusy)return;
+ const orderId=entitlementRefundOrder.value.trim();if(!orderId)return;
  entitlementBusy=true;setEntitlementFeedback("");
  try{
-  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action,entitlementId:row.entitlementId,userType})});
+  const params=new URLSearchParams({q:orderId}),lookup=await entitlementRequest("/api/owner-console/entitlements?"+params.toString());
+  const row=(lookup.entitlements||[]).find(item=>String(item.orderId||"")===orderId);
+  if(!row)throw new Error("没有找到与该 Order ID 精确关联的账号");
+  if(entitlementState(row)==="revoked")throw new Error("该订单关联资格已经 Revoked");
+  if(!confirm(`退款会永久 Revoke entitlement，但不会删除 canonical user data。\n\nOrder ID：${orderId}\n账号：${row.qqAccount}\n\n确定继续吗？`))return;
+  await entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action:"refund-revoke",orderId})});
+  entitlementRefundOrder.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true,true);setEntitlementFeedback(`退款订单 ${orderId} 已关联并永久 Revoke QQ ${row.qqAccount}`);
+ }catch(error){setEntitlementFeedback(error.message||"退款 Revoke 没有完成",true)}finally{entitlementBusy=false}
+}
+async function mutateEntitlement(row,action){
+ if(entitlementBusy)return;
+ if(action==="revoke"&&!confirm(`Revoke 是永久终态。\n\n本次将 Revoke 的账号：\n${row.qqAccount}\n\n确定继续吗？`))return;
+ if(action==="reissue"&&!confirm(`将为 QQ ${row.qqAccount} 签发全新的 Entitlement / Activation Link；旧 Link 不会复活。确定继续吗？`))return;
+ entitlementBusy=true;setEntitlementFeedback("");
+ try{
+  const result=await entitlementRequest("/api/owner-console/entitlements",{method:"PATCH",body:JSON.stringify({action,entitlementId:row.entitlementId})});
   if(result.entitlement?.activationLink)await copyEntitlementLink(result.entitlement);
-  await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(action==="regenerate"?"新链接已生成并复制，旧链接已失效":action==="revoke"?"资格已撤销":"用户类型已更新");
+  await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback(action==="regenerate"?"新链接已生成并复制，旧链接已失效":action==="reissue"?"新 Entitlement 已签发并复制，旧 Link 永久失效":action==="revoke"?"Entitlement 已永久 Revoke":action==="suspend"?"访问已暂停":"访问已恢复");
  }catch(error){setEntitlementFeedback(error.message||"操作失败",true)}finally{entitlementBusy=false}
 }
 function searchEntitlements(event){event.preventDefault();entitlementSelectedIds.clear();refreshEntitlements(entitlementSearchQq.value.trim())}
+function renderEntitlementReleases(){
+ const channels=entitlementReleaseCatalog.channels||[];
+ entitlementReleaseList.innerHTML=channels.length?channels.map(channel=>{
+  const build=channel.build||{},name=channel.releaseChannel==="developer"?"Developer":channel.releaseChannel==="beta"?"Beta":"Stable";
+  const promote=channel.releaseChannel==="developer"?`<button class="btn" data-release-action="promote" data-target="beta" data-build-id="${esc(build.buildId||"")}">Promote SAME build → Beta</button>`:channel.releaseChannel==="beta"?`<button class="btn" data-release-action="promote" data-target="stable" data-build-id="${esc(build.buildId||"")}">Promote SAME build → Stable</button>`:"";
+  return `<div class="ent-release-row"><strong>${name}</strong><div><b>App ${esc(build.appVersion||"—")}</b><p>${esc(build.gitSha||"")} · Sites ${esc(build.sitesVersion||"—")}<br>${esc(build.artifactDigest||"")}</p></div><div class="ent-release-actions">${promote}</div></div>`
+ }).join(""):'<div class="empty">尚未读取 Release Catalog。</div>';
+}
+async function registerDeveloperRelease(event){
+ event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;setEntitlementFeedback("");
+ try{await entitlementRequest("/api/owner-console/releases",{method:"POST",body:JSON.stringify({appVersion:Number(entitlementReleaseApp.value),gitSha:entitlementReleaseSha.value,sitesVersion:Number(entitlementReleaseSites.value),artifactDigest:entitlementReleaseDigest.value})});await refreshEntitlements(entitlementSearchQq.value.trim(),true,true);setEntitlementFeedback("Developer immutable build 已登记；未晋升 Beta / Stable")}
+ catch(error){setEntitlementFeedback(error.message||"Developer build 登记失败",true)}finally{entitlementBusy=false}
+}
+async function promoteEntitlementRelease(buildId,targetChannel){
+ if(entitlementBusy)return;
+ const label=targetChannel==="beta"?"Beta":"Stable";
+ if(!confirm(`Owner 明确批准后，将把同一个 immutable build 晋升到 ${label}。\n不会重新 build。\n\n确定继续吗？`))return;
+ entitlementBusy=true;setEntitlementFeedback("");
+ try{await entitlementRequest("/api/owner-console/releases",{method:"PATCH",body:JSON.stringify({buildId,targetChannel})});await refreshEntitlements(entitlementSearchQq.value.trim(),true,true);setEntitlementFeedback(`同一个 immutable build 已晋升到 ${label}`)}
+ catch(error){setEntitlementFeedback(error.message||`晋升 ${label} 失败`,true)}finally{entitlementBusy=false}
+}
 async function addEntitlementAdmin(event){
  event.preventDefault();if(entitlementBusy)return;entitlementBusy=true;setEntitlementFeedback("");
  try{await entitlementRequest("/api/owner-console/operators",{method:"POST",body:JSON.stringify({qqAccount:entitlementAdminQq.value})});entitlementAdminQq.value="";await refreshEntitlements(entitlementSearchQq.value.trim(),true);setEntitlementFeedback("Admin QQ 已加入 Allowlist")}
@@ -662,9 +720,8 @@ entitlementList.addEventListener("click",event=>{
 entitlementList.addEventListener("change",event=>{
  const checkbox=event.target.closest("input[data-ent-select]");
  if(checkbox){const id=checkbox.closest(".ent-row")?.dataset.id;if(id){if(checkbox.checked)entitlementSelectedIds.add(id);else entitlementSelectedIds.delete(id);renderEntitlementBatchState()}return}
- const select=event.target.closest('select[data-ent-action="change-type"]');if(!select)return;
- const row=entitlementRows.find(item=>item.entitlementId===select.closest(".ent-row")?.dataset.id);if(row)mutateEntitlement(row,"change-type",select.value)
 });
+entitlementReleaseList.addEventListener("click",event=>{const button=event.target.closest('[data-release-action="promote"]');if(button)promoteEntitlementRelease(button.dataset.buildId||"",button.dataset.target||"")});
 entitlementAdminList.addEventListener("click",event=>{
  const button=event.target.closest('[data-admin-action="toggle"]');if(!button)return;
  const qq=button.closest(".ent-admin-row")?.dataset.qq,row=entitlementOperators.find(item=>item.qq_account===qq);if(!row||entitlementBusy)return;
