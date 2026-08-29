@@ -73,27 +73,56 @@ test("authorization status refreshes while visible and stops outside the authori
   assert.match(html, /if\(document\.hidden\)\{stopEntitlementPolling\(\);return\}/);
 });
 
-test("Owner can combine QQ, status, and user_type filters", () => {
+test("Owner combines QQ, status, and user_type filters as one strict intersection", () => {
   assert.match(html, /id="entitlementSearchQq"/);
   assert.match(html, /id="entitlementFilter"/);
   assert.match(html, /id="entitlementTypeFilter"/);
   for (const type of ["stable", "beta", "developer"]) {
     assert.match(html, new RegExp(`<option value="${type}">`, "i"));
   }
-  assert.match(html, /entitlementMatchesFilter\(row,statusFilter\)&&entitlementMatchesType\(row,typeFilter\)/);
+  assert.match(html, /entitlementMatchesQuery\(row,query\)&&entitlementMatchesFilter\(row,statusFilter\)&&entitlementMatchesType\(row,typeFilter\)/);
 
   const filterHarness = new Function(`${extractFunction("function entitlementState")}
+    ${extractFunction("function entitlementMatchesQuery")}
     ${extractFunction("function entitlementMatchesFilter")}
     ${extractFunction("function entitlementMatchesType")}
-    return { entitlementMatchesFilter, entitlementMatchesType };`)();
+    return { entitlementMatchesQuery, entitlementMatchesFilter, entitlementMatchesType };`)();
   const rows = [
-    { status: "active", activationState: "activated", userType: "stable" },
-    { status: "active", activationState: "expired", userType: "beta" },
-    { status: "revoked", activationState: "activated", userType: "developer" },
+    { qqAccount: "10001", status: "active", activationState: "activated", userType: "stable" },
+    { qqAccount: "10002", status: "active", activationState: "expired", userType: "beta" },
+    { qqAccount: "20001", status: "revoked", activationState: "activated", userType: "developer" },
+    { qqAccount: "10003", status: "active", activationState: "activated", userType: "DEVELOPER" },
+    { qqAccount: "10004", status: "active", activationState: "activated" },
   ];
   assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesType(row, "beta")), [rows[1]]);
   assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesFilter(row, "pending")), [rows[1]]);
+  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesType(row, "stable")), [rows[0]]);
+  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesType(row, "developer")), [rows[2], rows[3]]);
+  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesQuery(row, "1000")), [rows[0], rows[1], rows[3], rows[4]]);
   assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesType(row, "all")), rows);
+
+  const visible = rows.filter((row) => filterHarness.entitlementMatchesQuery(row, "100")
+    && filterHarness.entitlementMatchesFilter(row, "activated")
+    && filterHarness.entitlementMatchesType(row, "stable"));
+  assert.deepEqual(visible, [rows[0]], "Stable never includes Beta, Developer, or unknown rows");
+
+  const combinedHarness = new Function(`
+    const entitlementRows=${JSON.stringify(rows)};
+    const entitlementSearchQq={value:""},entitlementFilter={value:"all"},entitlementTypeFilter={value:"all"};
+    ${extractFunction("function entitlementState")}
+    ${extractFunction("function entitlementMatchesQuery")}
+    ${extractFunction("function entitlementMatchesFilter")}
+    ${extractFunction("function entitlementMatchesType")}
+    ${extractFunction("function filteredEntitlementRows")}
+    return (query,status,type)=>{
+      entitlementSearchQq.value=query;entitlementFilter.value=status;entitlementTypeFilter.value=type;
+      return filteredEntitlementRows().map(row=>row.qqAccount);
+    };`)();
+  assert.deepEqual(combinedHarness("", "all", "stable"), ["10001"]);
+  assert.deepEqual(combinedHarness("", "all", "beta"), ["10002"]);
+  assert.deepEqual(combinedHarness("", "all", "developer"), ["20001", "10003"]);
+  assert.deepEqual(combinedHarness("", "all", "all"), rows.map((row) => row.qqAccount));
+  assert.deepEqual(combinedHarness("100", "activated", "developer"), ["10003"]);
 });
 
 test("batch selection is limited to active rows in the current filtered result", () => {
@@ -125,6 +154,7 @@ test("batch user_type changes use the existing Owner PATCH path and refresh auto
   const batchSource = html.slice(start, end);
   assert.match(batchSource, /已选择 \$\{selectedRows\.length\} 个账号，即将批量修改为 \$\{targetLabel\}/);
   assert.match(batchSource, /method:"PATCH"/);
+  assert.match(batchSource, /selectedRows=filteredEntitlementRows\(\)\.filter/);
   assert.match(batchSource, /action:"change-type"/);
   assert.match(batchSource, /entitlementId:row\.entitlementId,userType:target/);
   assert.match(batchSource, /await refreshEntitlements\(entitlementSearchQq\.value\.trim\(\),true,true\)/);
@@ -139,6 +169,7 @@ test("batch user_type changes use the existing Owner PATCH path and refresh auto
     ];
     let entitlementSelectedIds=new Set(["one","two","three"]),requests=[],refreshCount=0,feedback=[];
     const entitlementBatchType={value:"stable"},entitlementSearchQq={value:""};
+    function filteredEntitlementRows(){return entitlementRows.filter(row=>row.entitlementId!=="two")}
     function confirm(){return true}
     function renderEntitlementBatchState(){}
     function renderEntitlements(){}

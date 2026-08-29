@@ -534,9 +534,10 @@ async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=
 }
 function entitlementState(row){return row.status==="revoked"?"revoked":row.activationState==="activated"?"activated":row.activationState==="expired"?"expired":"pending"}
 function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"已撤销":state==="activated"?"已激活":state==="expired"?"已过期":"待激活"}
+function entitlementMatchesQuery(row,query){const needle=String(query||"").trim().toLowerCase();return !needle||String(row.qqAccount||"").toLowerCase().includes(needle)}
 function entitlementMatchesFilter(row,filter){const state=entitlementState(row);return filter==="all"||state===filter||(filter==="pending"&&state==="expired")}
-function entitlementMatchesType(row,filter){return filter==="all"||String(row.userType||"stable").toLowerCase()===filter}
-function filteredEntitlementRows(){const statusFilter=entitlementFilter.value||"all",typeFilter=entitlementTypeFilter.value||"all";return entitlementRows.filter(row=>entitlementMatchesFilter(row,statusFilter)&&entitlementMatchesType(row,typeFilter))}
+function entitlementMatchesType(row,filter){return filter==="all"||String(row.userType||"").trim().toLowerCase()===filter}
+function filteredEntitlementRows(){const query=entitlementSearchQq.value,statusFilter=entitlementFilter.value||"all",typeFilter=entitlementTypeFilter.value||"all";return entitlementRows.filter(row=>entitlementMatchesQuery(row,query)&&entitlementMatchesFilter(row,statusFilter)&&entitlementMatchesType(row,typeFilter))}
 function entitlementTime(value){return value?new Date(value).toLocaleString("zh-CN",{hour12:false}):"—"}
 function reconcileEntitlementSelection(rows=filteredEntitlementRows()){
  const selectableIds=new Set(rows.filter(row=>row.status==="active").map(row=>row.entitlementId));
@@ -567,7 +568,7 @@ function selectAllFilteredEntitlements(){entitlementSelectedIds=new Set(filtered
 function clearEntitlementSelection(){entitlementSelectedIds.clear();renderEntitlements()}
 async function applyEntitlementBatchType(){
  if(entitlementBusy)return;
- const selectedRows=entitlementRows.filter(row=>row.status==="active"&&entitlementSelectedIds.has(row.entitlementId)),target=entitlementBatchType.value,targetLabel=target==="stable"?"Stable":target==="beta"?"Beta":"Developer";
+ const selectedRows=filteredEntitlementRows().filter(row=>row.status==="active"&&entitlementSelectedIds.has(row.entitlementId)),target=entitlementBatchType.value,targetLabel=target==="stable"?"Stable":target==="beta"?"Beta":"Developer";
  if(!selectedRows.length){setEntitlementFeedback("请先选择要修改的账号",true);return}
  if(!confirm(`已选择 ${selectedRows.length} 个账号，即将批量修改为 ${targetLabel}。确定继续吗？`))return;
  const pendingRows=selectedRows.filter(row=>row.userType!==target);
