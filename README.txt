@@ -11,7 +11,7 @@
 - 日志展示已解决问题、重复次数、新增问题、知识库同步情况
 - Owner 在「授权」中通过 47 服务端验证后管理 Entitlement、Activation Link 与 Admin Allowlist
 - Owner 可按 user_type 筛选授权账号，并对当前筛选结果进行多选与批量类型修改
-- 已激活 Account 可在同一「授权」区域查看授权设备并由 Owner 撤销丢失或损坏的旧设备
+- 已激活 Account 可在同一「授权」区域查看设备与其使用入口；Owner 可移动或解除单个入口，也可撤销整台设备
 
 QQ 会话、知识库、待确认与人工回复继续使用原有 Supabase / QQ Bridge 数据链路。
 授权权限与 Token 均由 47 正式服务端校验，静态管理台不保存服务端密钥。

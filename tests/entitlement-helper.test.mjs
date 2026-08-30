@@ -39,11 +39,18 @@ test("authorization UI delegates identity and privilege decisions to the 47 serv
   assert.doesNotMatch(html, /ENTITLEMENT_QQ_BRIDGE_SECRET|service_role/);
 });
 
-test("Owner can inspect and revoke Account devices without exposing that capability to Admin", () => {
+test("Owner can inspect devices and manage their individual use entries without exposing that capability to Admin", () => {
   assert.match(html, /data-ent-action="devices"/);
   assert.match(html, /id="entitlementDevicePanel"/);
   assert.match(html, /openEntitlementDevices/);
   assert.match(html, /revokeEntitlementDevice/);
+  assert.match(html, /使用入口/);
+  assert.match(html, /manageEntitlementEntry/);
+  assert.match(html, /data-entry-action="move"/);
+  assert.match(html, /data-entry-action="unlink"/);
+  assert.match(html, /method:\"PATCH\",body:JSON\.stringify/);
+  assert.match(html, /浏览器 · 待下次使用识别/);
+  assert.doesNotMatch(html, />原有使用入口</);
   assert.match(html, /method:"DELETE",body:JSON\.stringify\(\{accountId:entitlementDeviceContext\.accountId,deviceId\}\)/);
   assert.match(html, /result\.overLimit/);
   assert.match(html, /超过当前上限/);
