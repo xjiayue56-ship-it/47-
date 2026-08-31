@@ -46,11 +46,17 @@ test("Owner can inspect devices and manage their individual use entries without 
   assert.match(html, /revokeEntitlementDevice/);
   assert.match(html, /使用入口/);
   assert.match(html, /manageEntitlementEntry/);
-  assert.match(html, /data-entry-action="move"/);
+  assert.match(html, /data-entry-action="move-open"/);
+  assert.match(html, /data-entry-action="move-confirm"/);
+  assert.match(html, /data-entry-target-choice/);
   assert.match(html, /data-entry-action="unlink"/);
   assert.match(html, /method:\"PATCH\",body:JSON\.stringify/);
-  assert.match(html, /浏览器 · 待下次使用识别/);
+  assert.match(html, /浏览器入口/);
   assert.doesNotMatch(html, />原有使用入口</);
+  assert.doesNotMatch(html, /<select data-entry-target/);
+  assert.match(html, /最近使用：\$\{entitlementTime\(target\.lastUsedAt\)\} · 已有 \$\{target\.entryCount\} 个使用入口/);
+  assert.match(html, /确认移动 →/);
+  assert.match(html, /Account、Canonical World、E2EE、Session、Restore 与已有数据保持不变/);
   assert.match(html, /method:"DELETE",body:JSON\.stringify\(\{accountId:entitlementDeviceContext\.accountId,deviceId\}\)/);
   assert.match(html, /result\.overLimit/);
   assert.match(html, /超过当前上限/);
@@ -59,9 +65,13 @@ test("Owner can inspect devices and manage their individual use entries without 
 test("activated accounts expose an Owner-only copy action for the existing login entry", () => {
   assert.match(html, /state==="active"\|\|state==="suspended"\?'<button data-ent-action="copy-login-link">复制登录入口<\/button><button data-ent-action="devices">设备<\/button>'/);
   assert.match(html, /async function copyActivatedAccountLoginLink\(row\)/);
-  assert.match(html, /action:"copy-login-link",entitlementId:row\.entitlementId/);
+  assert.match(html, /action:"copy-login-link",entitlementId/);
   assert.match(html, /if\(!result\.loginLink\)throw new Error\("已有账号登录入口没有正确返回"\)/);
-  assert.match(html, /await copyEntitlementText\(result\.loginLink\)/);
+  assert.match(html, /entitlementCopyBusyIds\.has\(entitlementId\)/);
+  assert.match(html, /正在准备已有账号登录入口/);
+  assert.match(html, /showEntitlementCopyRecovery\(result\.loginLink\)/);
+  assert.match(html, /浏览器没有允许自动复制/);
+  assert.match(html, /entitlementCopyRecoveryButton\.addEventListener/);
   assert.match(html, /action==="copy-login-link"\)copyActivatedAccountLoginLink\(row\)/);
   assert.doesNotMatch(html, /action:"regenerate-login-link"|action:"issue-login-link"/);
 });
