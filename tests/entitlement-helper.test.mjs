@@ -107,41 +107,34 @@ test("Owner combines QQ, access status, identity, and release channel as one str
   for (const type of ["stable", "beta", "developer"]) {
     assert.match(html, new RegExp(`<option value="${type}">`, "i"));
   }
-  assert.match(html, /entitlementMatchesQuery\(row,query\)&&entitlementMatchesDimension\(row,access,"accessStatus"\)&&entitlementMatchesDimension\(row,identity,"identityType"\)&&entitlementMatchesDimension\(row,channel,"releaseChannel"\)/);
+  assert.match(html, /selectedChannel=channel==="all"\?null:entitlementChannelAccess\(row,channel\)/);
+  assert.match(html, /channel==="all"\|\|Boolean\(selectedChannel\)/);
 
   const filterHarness = new Function(`${extractFunction("function entitlementMatchesQuery")}
     ${extractFunction("function entitlementMatchesDimension")}
     return { entitlementMatchesQuery, entitlementMatchesDimension };`)();
   const rows = [
-    { qqAccount: "10001", accessStatus: "active", identityType: "customer", releaseChannel: "stable" },
-    { qqAccount: "10002", accessStatus: "active", identityType: "tester", releaseChannel: "beta" },
-    { qqAccount: "20001", accessStatus: "revoked", identityType: "customer", releaseChannel: "stable" },
-    { qqAccount: "10003", accessStatus: "suspended", identityType: "tester", releaseChannel: "developer" },
+    { qqAccount: "10001", accessStatus: "active", identityType: "customer", channelAccess: [{ releaseChannel: "stable", accessStatus: "active" }, { releaseChannel: "beta", accessStatus: "active" }] },
+    { qqAccount: "10002", accessStatus: "active", identityType: "tester", channelAccess: [{ releaseChannel: "beta", accessStatus: "active" }] },
+    { qqAccount: "20001", accessStatus: "revoked", identityType: "customer", channelAccess: [{ releaseChannel: "stable", accessStatus: "revoked" }] },
+    { qqAccount: "10003", accessStatus: "suspended", identityType: "tester", channelAccess: [{ releaseChannel: "developer", accessStatus: "suspended" }] },
   ];
-  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesDimension(row, "beta", "releaseChannel")), [rows[1]]);
   assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesDimension(row, "active", "accessStatus")), [rows[0], rows[1]]);
-  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesDimension(row, "stable", "releaseChannel")), [rows[0], rows[2]]);
-  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesDimension(row, "developer", "releaseChannel")), [rows[3]]);
   assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesQuery(row, "1000")), [rows[0], rows[1], rows[3]]);
-  assert.deepEqual(rows.filter((row) => filterHarness.entitlementMatchesDimension(row, "all", "releaseChannel")), rows);
-
-  const visible = rows.filter((row) => filterHarness.entitlementMatchesQuery(row, "100")
-    && filterHarness.entitlementMatchesDimension(row, "active", "accessStatus")
-    && filterHarness.entitlementMatchesDimension(row, "stable", "releaseChannel"));
-  assert.deepEqual(visible, [rows[0]], "Stable never includes Beta, Developer, or unknown rows");
 
   const combinedHarness = new Function(`
     const entitlementRows=${JSON.stringify(rows)};
     const entitlementSearchQq={value:""},entitlementAccessFilter={value:"all"},entitlementIdentityFilter={value:"all"},entitlementChannelFilter={value:"all"};
     ${extractFunction("function entitlementMatchesQuery")}
     ${extractFunction("function entitlementMatchesDimension")}
+    ${extractFunction("function entitlementChannelAccess")}
     ${extractFunction("function filteredEntitlementRows")}
     return (query,access,identity,channel)=>{
       entitlementSearchQq.value=query;entitlementAccessFilter.value=access;entitlementIdentityFilter.value=identity;entitlementChannelFilter.value=channel;
       return filteredEntitlementRows().map(row=>row.qqAccount);
     };`)();
   assert.deepEqual(combinedHarness("", "all", "all", "stable"), ["10001", "20001"]);
-  assert.deepEqual(combinedHarness("", "active", "tester", "beta"), ["10002"]);
+  assert.deepEqual(combinedHarness("", "active", "all", "beta"), ["10001", "10002"]);
   assert.deepEqual(combinedHarness("", "all", "all", "developer"), ["10003"]);
   assert.deepEqual(combinedHarness("", "all", "all", "all"), rows.map((row) => row.qqAccount));
   assert.deepEqual(combinedHarness("100", "suspended", "tester", "developer"), ["10003"]);
@@ -181,7 +174,9 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
   assert.match(batchSource, /selectedRows=filteredEntitlementRows\(\)\.filter/);
   assert.match(batchSource, /action:"batch",operation/);
   assert.match(batchSource, /entitlementIds:selectedRows\.map\(row=>row\.entitlementId\)/);
-  assert.match(batchSource, /releaseChannel:actionValue\.split\(":"\)\[1\]/);
+  assert.match(batchSource, /operation:actionValue/);
+  assert.match(html, /option value="grant-beta">开启 Beta/);
+  assert.match(html, /option value="suspend-beta">关闭 Beta/);
   assert.match(batchSource, /confirmedAccounts:selectedRows\.map\(row=>row\.qqAccount\)/);
   assert.match(batchSource, /await refreshEntitlements\(entitlementSearchQq\.value\.trim\(\),true,true\)/);
   assert.doesNotMatch(batchSource, /method:"POST"|method:"DELETE"|activationLink|deviceId/);
@@ -194,7 +189,7 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
       {entitlementId:"three",qqAccount:"10003",accessStatus:"revoked",releaseChannel:"beta"}
     ];
     let entitlementSelectedIds=new Set(["one","two","three"]),requests=[],refreshCount=0,feedback=[];
-    const entitlementBatchAction={value:"channel:stable"},entitlementSearchQq={value:""};
+    const entitlementBatchAction={value:"grant-beta"},entitlementSearchQq={value:""};
     function filteredEntitlementRows(){return entitlementRows.filter(row=>row.entitlementId!=="two")}
     function confirm(){return true}
     function renderEntitlementBatchState(){}
@@ -210,11 +205,11 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
   return runBatch().then((result) => {
     assert.deepEqual(result.requests, [{
       path: "/api/owner-console/entitlements",
-      body: { action: "batch", operation: "change-channel", entitlementIds: ["one"], releaseChannel: "stable" },
+      body: { action: "batch", operation: "grant-beta", entitlementIds: ["one"] },
     }]);
     assert.equal(result.refreshCount, 1);
     assert.deepEqual(result.selected, []);
-    assert.equal(result.feedback.at(-1).message, "已对 1 个账号执行 Channel → stable");
+    assert.equal(result.feedback.at(-1).message, "已对 1 个账号执行 开启 Beta");
   });
 });
 
