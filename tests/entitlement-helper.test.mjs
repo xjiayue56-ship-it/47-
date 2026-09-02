@@ -39,6 +39,15 @@ test("authorization UI delegates identity and privilege decisions to the 47 serv
   assert.doesNotMatch(html, /ENTITLEMENT_QQ_BRIDGE_SECRET|service_role/);
 });
 
+test("qualification issuance exposes only Customer Stable and Tester Beta while Developer is deployment-managed", () => {
+  assert.match(html, /value="customer">Customer · Stable/);
+  assert.match(html, /value="tester">Tester · Beta/);
+  assert.match(html, /id="entitlementIssueOrder"/);
+  assert.match(html, /identityType:entitlementIssueIdentity\.value/);
+  assert.doesNotMatch(html, /id="entitlementIssueType"[\s\S]{0,500}value="developer"/);
+  assert.doesNotMatch(html, /registerDeveloperRelease|登记 Developer/);
+});
+
 test("Owner can inspect devices and manage their individual use entries without exposing that capability to Admin", () => {
   assert.match(html, /data-ent-action="devices"/);
   assert.match(html, /id="entitlementDevicePanel"/);
@@ -170,8 +179,10 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
   assert.match(batchSource, /accounts=selectedRows\.map\(row=>row\.qqAccount\)\.join\("、"\)/);
   assert.match(batchSource, /method:"PATCH"/);
   assert.match(batchSource, /selectedRows=filteredEntitlementRows\(\)\.filter/);
-  assert.match(batchSource, /action:"change-dimensions"/);
+  assert.match(batchSource, /action:"batch",operation/);
+  assert.match(batchSource, /entitlementIds:selectedRows\.map\(row=>row\.entitlementId\)/);
   assert.match(batchSource, /releaseChannel:actionValue\.split\(":"\)\[1\]/);
+  assert.match(batchSource, /confirmedAccounts:selectedRows\.map\(row=>row\.qqAccount\)/);
   assert.match(batchSource, /await refreshEntitlements\(entitlementSearchQq\.value\.trim\(\),true,true\)/);
   assert.doesNotMatch(batchSource, /method:"POST"|method:"DELETE"|activationLink|deviceId/);
 
@@ -199,7 +210,7 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
   return runBatch().then((result) => {
     assert.deepEqual(result.requests, [{
       path: "/api/owner-console/entitlements",
-      body: { action: "change-dimensions", entitlementId: "one", releaseChannel: "stable" },
+      body: { action: "batch", operation: "change-channel", entitlementIds: ["one"], releaseChannel: "stable" },
     }]);
     assert.equal(result.refreshCount, 1);
     assert.deepEqual(result.selected, []);
@@ -214,8 +225,9 @@ test("single-account lifecycle and immutable release promotion remain explicit",
   }
   assert.match(html, /Revoke 是永久终态/);
   assert.match(html, /旧 Link 不会复活/);
-  assert.match(html, /Promote SAME build → Beta/);
-  assert.match(html, /Promote SAME build → Stable/);
+  assert.match(html, /发布到 Beta/);
+  assert.match(html, /发布到 Stable/);
+  assert.match(html, /channel\.releaseChannel==="developer"/);
   assert.match(html, /Owner 明确批准/);
   assert.doesNotMatch(html, /autoPromote|automaticPromotion/);
 });
