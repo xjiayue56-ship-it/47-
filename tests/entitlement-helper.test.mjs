@@ -91,6 +91,21 @@ test("expired Activation Links stay visible as expired and can only be regenerat
   assert.match(html, /state==="pending"\?'<button data-ent-action="regenerate">重新生成<\/button>'/);
 });
 
+test("Owner sees independent Stable and Beta controls with lifecycle, timing, and device capacity", () => {
+  assert.match(html, /function entitlementActivationLabel\(row\)/);
+  assert.match(html, /已激活/);
+  assert.match(html, /待激活/);
+  assert.match(html, /已过期/);
+  assert.match(html, /function entitlementRemaining\(value\)/);
+  assert.match(html, /Beta Preview/);
+  assert.match(html, /Beta 测试/);
+  assert.match(html, /设备 \$\{Number\(row\.authorizedDeviceCount\|\|0\)\} \/ \$\{row\.deviceLimit\?\?"—"\}/);
+  assert.match(html, /data-ent-action="\$\{stableOn\?"disable-stable":"enable-stable"\}"/);
+  assert.match(html, /data-ent-action="\$\{betaOn\?"suspend-beta":"grant-beta"\}"/);
+  assert.match(html, /Stable \$\{stableOn\?"ON":"OFF"\}/);
+  assert.match(html, /Beta \$\{betaOn\?"ON":"OFF"\}/);
+});
+
 test("authorization status refreshes while visible and stops outside the authorization view", () => {
   assert.match(html, /ENTITLEMENT_POLL_INTERVAL_MS=15000/);
   assert.match(html, /if\(id==="authorization"\)loadEntitlementConsole\(\);[\s\S]*else stopEntitlementPolling\(\)/);
@@ -177,6 +192,8 @@ test("batch lifecycle changes use the Owner PATCH path, list revoke targets, and
   assert.match(batchSource, /operation:actionValue/);
   assert.match(html, /option value="grant-beta">开启 Beta/);
   assert.match(html, /option value="suspend-beta">关闭 Beta/);
+  assert.match(html, /option value="enable-stable">开启 Stable/);
+  assert.match(html, /option value="disable-stable">关闭 Stable/);
   assert.match(batchSource, /confirmedAccounts:selectedRows\.map\(row=>row\.qqAccount\)/);
   assert.match(batchSource, /await refreshEntitlements\(entitlementSearchQq\.value\.trim\(\),true,true\)/);
   assert.doesNotMatch(batchSource, /method:"POST"|method:"DELETE"|activationLink|deviceId/);
