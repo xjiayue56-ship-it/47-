@@ -250,6 +250,19 @@ test("single-account lifecycle and immutable release promotion remain explicit",
   assert.doesNotMatch(html, /autoPromote|automaticPromotion/);
 });
 
+test("silent catalog polling cannot swallow an approved lifecycle or promotion action", () => {
+  const refreshStart = html.indexOf("async function refreshEntitlements");
+  const refreshEnd = html.indexOf("function entitlementState", refreshStart);
+  assert.ok(refreshStart >= 0 && refreshEnd > refreshStart, "refresh handler is present");
+  const refreshSource = html.slice(refreshStart, refreshEnd);
+  assert.match(html, /entitlementRefreshBusy=false/);
+  assert.match(html, /entitlementRefreshSequence=0/);
+  assert.doesNotMatch(refreshSource, /entitlementBusy=true/, "background reads must not take the mutation lock");
+  assert.match(refreshSource, /entitlementRefreshBusy=true/);
+  assert.match(refreshSource, /refreshSequence!==entitlementRefreshSequence/);
+  assert.match(refreshSource, /entitlementBusy&&!force/);
+});
+
 test("refund lookup uses the exact Order ID, names the linked account, and revokes only its entitlement", () => {
   assert.match(html, /id="entitlementRefundOrder"/);
   const start = html.indexOf("async function revokeRefundedEntitlement(event)");

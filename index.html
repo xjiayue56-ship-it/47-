@@ -230,7 +230,7 @@ const ENTITLEMENT_API_ORIGIN="https://mono-phone-chat-xiaoxiong.jx4728.chatgpt.s
 const ENTITLEMENT_AUTH_URL=ENTITLEMENT_API_ORIGIN+"/api/entitlements/helper-console/auth/start";
 const ENTITLEMENT_SESSION_KEY="47_helper_entitlement_owner_session_v1";
 const ENTITLEMENT_POLL_INTERVAL_MS=15000;
-let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementReleaseCatalog={channels:[],builds:[]}, entitlementBusy=false, entitlementPoll=null, activeHelperView="home", entitlementDeviceContext=null, entitlementBatchMode=false, entitlementSelectedIds=new Set(), entitlementCopyBusyIds=new Set(), entitlementMoveEntryId="", entitlementMoveTargetByEntry=new Map();
+let entitlementSessionToken=sessionStorage.getItem(ENTITLEMENT_SESSION_KEY)||"", entitlementRows=[], entitlementOperators=[], entitlementReleaseCatalog={channels:[],builds:[]}, entitlementBusy=false, entitlementRefreshBusy=false, entitlementRefreshSequence=0, entitlementPoll=null, activeHelperView="home", entitlementDeviceContext=null, entitlementBatchMode=false, entitlementSelectedIds=new Set(), entitlementCopyBusyIds=new Set(), entitlementMoveEntryId="", entitlementMoveTargetByEntry=new Map();
 
 function renderHome(){
  if(!sb){
@@ -530,9 +530,9 @@ async function loadEntitlementConsole(){
  startEntitlementPolling();
 }
 async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=false,silent=false){
- if(!entitlementSessionToken||(entitlementBusy&&!force))return;
- const ownsBusyState=!entitlementBusy;
- if(ownsBusyState)entitlementBusy=true;
+ if(!entitlementSessionToken||(entitlementBusy&&!force)||(entitlementRefreshBusy&&!force))return;
+ const refreshSequence=++entitlementRefreshSequence;
+ entitlementRefreshBusy=true;
  if(!silent){entitlementStatus.textContent="正在同步授权…";setEntitlementFeedback("")}
  try{
   const params=new URLSearchParams({q:query});
@@ -544,9 +544,10 @@ async function refreshEntitlements(query=entitlementSearchQq.value.trim(),force=
    entitlementRequest("/api/owner-console/operators"),
    entitlementRequest("/api/owner-console/releases")
   ]);
+  if(refreshSequence!==entitlementRefreshSequence)return;
   entitlementRows=records.entitlements||[];entitlementOperators=operators.operators||[];entitlementReleaseCatalog={channels:releases.channels||[],builds:releases.builds||[]};
   renderEntitlementAccess(true);renderEntitlements();renderEntitlementAdmins();renderEntitlementReleases();
- }catch(error){if(!silent)setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(ownsBusyState)entitlementBusy=false}
+ }catch(error){if(!silent&&refreshSequence===entitlementRefreshSequence)setEntitlementFeedback(error.message||"授权数据读取失败",true)}finally{if(refreshSequence===entitlementRefreshSequence)entitlementRefreshBusy=false}
 }
 function entitlementState(row){return String(row.accessStatus||row.status||"pending").toLowerCase()}
 function entitlementStateLabel(row){const state=entitlementState(row);return state==="revoked"?"Revoked":state==="suspended"?"Suspended":state==="active"?"Active":"Pending"}
