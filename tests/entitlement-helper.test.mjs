@@ -240,7 +240,13 @@ test("single-account lifecycle and immutable release promotion remain explicit",
   assert.match(html, /发布到 Beta/);
   assert.match(html, /发布到 Stable/);
   assert.match(html, /channel\.releaseChannel==="developer"/);
-  assert.match(html, /Owner 明确批准/);
+  const promotionStart = html.indexOf("async function promoteEntitlementRelease");
+  const promotionEnd = html.indexOf("async function addEntitlementAdmin", promotionStart);
+  assert.ok(promotionStart >= 0 && promotionEnd > promotionStart, "release promotion handler is present");
+  const promotionSource = html.slice(promotionStart, promotionEnd);
+  assert.doesNotMatch(promotionSource, /confirm\(/, "approved Beta/Stable promotion must not require a redundant confirmation");
+  assert.match(promotionSource, /正在晋升同一个 immutable build/);
+  assert.match(promotionSource, /同一个 immutable build 已晋升/);
   assert.doesNotMatch(html, /autoPromote|automaticPromotion/);
 });
 

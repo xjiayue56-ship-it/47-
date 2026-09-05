@@ -737,8 +737,6 @@ function renderEntitlementReleases(){
 async function promoteEntitlementRelease(buildId,targetChannel){
  if(entitlementBusy)return;
  const label=targetChannel==="beta"?"Beta":"Stable";
- const developer=(entitlementReleaseCatalog.channels||[]).find(channel=>channel.releaseChannel==="developer")?.build||{};
- if(!confirm(`Owner 明确批准后，将把当前 Developer immutable build 直接发布到 ${label}。\n不会重新 build。\n\nApp ${developer.appVersion||"—"}\nSHA ${developer.gitSha||"—"}\nSites ${developer.sitesVersion||"—"}\n\n确定继续吗？`))return;
  entitlementBusy=true;setEntitlementFeedback(`正在晋升同一个 immutable build 到 ${label}…`);
  try{await entitlementRequest("/api/owner-console/releases",{method:"PATCH",body:JSON.stringify({buildId,targetChannel})});await refreshEntitlements(entitlementSearchQq.value.trim(),true,true);setEntitlementFeedback(`同一个 immutable build 已晋升到 ${label}`)}
  catch(error){setEntitlementFeedback(error.message||`晋升 ${label} 失败`,true)}finally{entitlementBusy=false}
