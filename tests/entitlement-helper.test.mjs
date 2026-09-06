@@ -104,6 +104,14 @@ test("Owner sees independent Stable and Beta controls with lifecycle, timing, an
   assert.match(html, /data-ent-action="\$\{betaOn\?"suspend-beta":"grant-beta"\}"/);
   assert.match(html, /Stable \$\{stableOn\?"ON":"OFF"\}/);
   assert.match(html, /Beta \$\{betaOn\?"ON":"OFF"\}/);
+  assert.match(html, /function entitlementPermissionEnabled\(access\)/);
+  assert.match(html, /state==="active"\|\|state==="pending"/);
+
+  const permissionEnabled = new Function(`${extractFunction("function entitlementPermissionEnabled")}
+    return entitlementPermissionEnabled;`)();
+  assert.equal(permissionEnabled({ accessStatus: "pending", permissionEnabled: true }), true);
+  assert.equal(permissionEnabled({ accessStatus: "suspended", permissionEnabled: false }), false);
+  assert.equal(permissionEnabled({ accessStatus: "pending" }), true, "older API payloads keep a pending grant visibly ON");
 });
 
 test("authorization status refreshes while visible and stops outside the authorization view", () => {

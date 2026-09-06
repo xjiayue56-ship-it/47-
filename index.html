@@ -554,6 +554,7 @@ function entitlementStateLabel(row){const state=entitlementState(row);return sta
 function entitlementMatchesQuery(row,query){const needle=String(query||"").trim().toLowerCase();return !needle||String(row.qqAccount||"").toLowerCase().includes(needle)||String(row.orderId||"").toLowerCase().includes(needle)}
 function entitlementMatchesDimension(row,value,key){return value==="all"||String(row[key]||"").trim().toLowerCase()===value}
 function entitlementChannelAccess(row,channel){return (row.channelAccess||[]).find(access=>String(access.releaseChannel||"").toLowerCase()===channel)}
+function entitlementPermissionEnabled(access){if(!access)return false;if(typeof access.permissionEnabled==="boolean")return access.permissionEnabled;return access.accessStatus==="active"||access.accessStatus==="pending"}
 function filteredEntitlementRows(){const query=entitlementSearchQq.value,access=entitlementAccessFilter.value||"all",identity=entitlementIdentityFilter.value||"all",channel=entitlementChannelFilter.value||"all";return entitlementRows.filter(row=>{const selectedChannel=channel==="all"?null:entitlementChannelAccess(row,channel),selectedStatus=selectedChannel?.accessStatus||"";return entitlementMatchesQuery(row,query)&&entitlementMatchesDimension(row,identity,"identityType")&&(channel==="all"||Boolean(selectedChannel))&&(access==="all"||(channel==="all"?entitlementMatchesDimension(row,access,"accessStatus"):String(selectedStatus).toLowerCase()===access))})}
 function entitlementTime(value){return value?new Date(value).toLocaleString("zh-CN",{hour12:false}):"—"}
 function entitlementActivationLabel(row){const state=String(row.activationState||"unavailable");return state==="activated"?"已激活":state==="unused"?"待激活":state==="expired"?"已过期":"无有效链接"}
@@ -579,7 +580,7 @@ function renderEntitlements(){
   const selector=entitlementBatchMode?`<label class="ent-select" aria-label="选择 QQ ${esc(row.qqAccount)}"><input type="checkbox" data-ent-select${checked}${revoked?" disabled":""}></label>`:"";
   const betaAccess=(row.channelAccess||[]).find(access=>access.releaseChannel==="beta");
   const stableAccess=(row.channelAccess||[]).find(access=>access.releaseChannel==="stable");
-  const betaOn=betaAccess?.accessStatus==="active",stableOn=stableAccess?.accessStatus==="active";
+  const betaOn=entitlementPermissionEnabled(betaAccess),stableOn=entitlementPermissionEnabled(stableAccess);
   const betaMode=stableOn?"Beta Preview":"Beta 测试";
   const betaMeta=betaAccess?`<br>${betaMode} · ${betaOn?"ON":"OFF"}${betaAccess.accessExpiresAt?` · ${entitlementRemaining(betaAccess.accessExpiresAt)} · ${entitlementTime(betaAccess.accessExpiresAt)}`:""}`:"";
   const stableMeta=stableAccess?`<br>Stable ${stableOn?"ON":"OFF"}`:"";
@@ -589,7 +590,7 @@ function renderEntitlements(){
   const lifecycle=state==="active"?'<button data-ent-action="suspend">Suspend</button>':state==="suspended"?'<button data-ent-action="resume">Resume</button>':"";
   const activation=row.activationLink?'<button data-ent-action="copy">复制链接</button>':state==="pending"?'<button data-ent-action="regenerate">重新生成</button>':"";
   const activated=state==="active"||state==="suspended"?'<button data-ent-action="copy-login-link">复制登录入口</button><button data-ent-action="devices">设备</button>':"";
-  const channelControls=!revoked&&state==="active"&&row.identityType!=="owner"&&row.identityType!=="admin"?`<button data-ent-action="${stableOn?"disable-stable":"enable-stable"}">${stableOn?"Stable OFF":"Stable ON"}</button><button data-ent-action="${betaOn?"suspend-beta":"grant-beta"}">${betaOn?"Beta OFF":"Beta ON"}</button>`:"";
+  const channelControls=!revoked&&(state==="active"||state==="pending")&&row.identityType!=="owner"&&row.identityType!=="admin"?`<button data-ent-action="${stableOn?"disable-stable":"enable-stable"}">${stableOn?"Stable OFF":"Stable ON"}</button><button data-ent-action="${betaOn?"suspend-beta":"grant-beta"}">${betaOn?"Beta OFF":"Beta ON"}</button>`:"";
   const terminal=revoked?'<button data-ent-action="reissue">重新批准</button>':`<button class="danger" data-ent-action="revoke">Revoke</button>`;
   return `<div class="ent-row${entitlementBatchMode?" is-batch":""}" data-id="${esc(row.entitlementId)}">${selector}<div><span class="ent-qq">${esc(row.qqAccount)}</span><span class="ent-meta">发放 ${entitlementTime(row.issuedAt)}<br>激活 ${entitlementTime(row.activatedAt)}${activationMeta}${deviceMeta}${orderMeta}</span></div><div class="ent-dimensions"><b>${esc(row.identityType)}</b><div class="ent-channel-state"><span class="${stableOn?"is-on":""}">Stable ${stableOn?"ON":"OFF"}</span><span class="${betaOn?"is-on":""}">Beta ${betaOn?"ON":"OFF"}</span></div><span class="ent-meta">${stableMeta}${betaMeta}</span></div><div><span class="ent-status ${revoked?"revoked":""}">${entitlementStateLabel(row)}</span></div><div class="ent-actions">${activation}${activated}${channelControls}${lifecycle}${terminal}</div></div>`
  }).join(""):`<div class="empty">没有匹配的授权记录。</div>`;
